@@ -1,0 +1,14 @@
+# Ignorar carpetas de caché de Python
+__pycache__/
+*.pyc
+
+# Ignorar la base de datos local (cada compañero tendrá la suya)
+db.sqlite3
+
+# Ignorar entornos virtuales (muy importante)
+venv/
+env/
+.env
+
+# Ignorar configuraciones de VS Code
+.vscode/
