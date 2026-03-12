@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,10 +7,19 @@
 </head>
 <body>
     <h1>Torneos Disponibles</h1>
-    <p>Bienvenido a LiquorEvents</p>
+
     <a href="#">Iniciar Sesión</a>
     <a href="#">Registrarse</a>
     <hr>
-    <p>Aqui apareceran los torneos disponibles</p>
+    {% for torneo in torneos %}
+    <h2>{{ torneo.nombre }}</h2>
+    <p>{{ torneo.descripcion }}</p>
+    <p>Fecha: {{ torneo.fecha }}</p>
+    <p>Cupos: {{ torneo.cupos }}</p>
+    <button>Inscribirse</button>
+    <hr>
+    {% empty %}
+    <p>No hay torneos disponibles</p>
+    {% endfor %}
 </body>
 </html>
