@@ -1,37 +1,47 @@
-{% if user.is_authenticated %}
+{% extends 'base/base.html' %}
 
-<p>Bienvenido {{ user.username }}</p>
+{% block contenido %}
 
-<form action="/logout/" method="POST">
+<h1 class="mb-4">🏆 Torneos Disponibles</h1>
 
-    {% csrf_token %}
+<div class="row">
 
-    <button type="submit">Cerrar sesión</button>
+{% for torneo in torneos %}
 
-</form>
-{% endif %}
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LiquorEvents</title>
-</head>
-<body>
-    <h1>Torneos Disponibles</h1>
+<div class="col-md-4">
 
-    <a href="/login/">Iniciar Sesión</a>
-    <a href="/registro/">Registrarse</a>
-    <hr>
-    {% for torneo in torneos %}
-    <h2>{{ torneo.nombre }}</h2>
-    <p>{{ torneo.descripcion }}</p>
-    <p>Fecha: {{ torneo.fecha }}</p>
-    <p>Cupos: {{ torneo.cupos }}</p>
-    <button>Inscribirse</button>
-    <hr>
-    {% empty %}
-    <p>No hay torneos disponibles</p>
-    {% endfor %}
-</body>
-</html>
+<div class="card mb-4 shadow">
+
+<div class="card-body">
+
+<h5 class="card-title">{{ torneo.nombre }}</h5>
+
+<p class="card-text">{{ torneo.descripcion }}</p>
+
+<p>
+<strong>Fecha:</strong> {{ torneo.fecha }}
+</p>
+
+<p>
+<strong>Cupos:</strong> {{ torneo.cupos }}
+</p>
+
+<a href="/inscribirse/{{ torneo.id }}/" class="btn btn-primary">
+Inscribirse
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+{% empty %}
+
+<p>No hay torneos disponibles</p>
+
+{% endfor %}
+
+</div>
+
+{% endblock %}
