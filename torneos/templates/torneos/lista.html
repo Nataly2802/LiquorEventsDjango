@@ -1,3 +1,15 @@
+{% if user.is_authenticated %}
+
+<p>Bienvenido {{ user.username }}</p>
+
+<form action="/logout/" method="POST">
+
+    {% csrf_token %}
+
+    <button type="submit">Cerrar sesión</button>
+
+</form>
+{% endif %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -8,7 +20,7 @@
 <body>
     <h1>Torneos Disponibles</h1>
 
-    <a href="#">Iniciar Sesión</a>
+    <a href="/login/">Iniciar Sesión</a>
     <a href="/registro/">Registrarse</a>
     <hr>
     {% for torneo in torneos %}
