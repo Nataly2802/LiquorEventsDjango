@@ -4,6 +4,8 @@ from .forms import VentaForm
 from .models import Venta, DetalleVenta, Producto
 from django.utils import timezone
 from torneos.models import Torneo
+from django.http import HttpResponse
+from reportlab.pdfgen import canvas
 
 # Create your views here.
 @login_required
@@ -76,3 +78,43 @@ def dashboard(request):
         "productos_bajo_stock": productos_bajo_stock,
         "torneos": torneos
     })
+
+
+@login_required
+def ticket_pdf(request, venta_id):
+
+    venta = Venta.objects.get(id=venta_id)
+
+    detalles = DetalleVenta.objects.filter(
+        venta=venta
+    )
+
+    response = HttpResponse(content_type="application/pdf")
+    response["Content-Disposition"] = f'attachment; filename="ticket_{venta.id}.pdf"'
+
+    p = canvas.Canvas(response)
+
+    y = 800
+
+    p.drawString(100, y, "LiquorEvents")
+    y -= 30
+
+    p.drawString(100, y, f"Venta #{venta.id}")
+    y -= 30
+
+    for d in detalles:
+
+        texto = f"{d.producto.nombre} x{d.cantidad} - ${d.subtotal}"
+
+        p.drawString(100, y, texto)
+
+        y -= 20
+
+    y -= 20
+
+    p.drawString(100, y, f"TOTAL: ${venta.total}")
+
+    p.showPage()
+    p.save()
+
+    return response
