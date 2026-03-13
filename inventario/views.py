@@ -8,7 +8,22 @@ from django.http import HttpResponse
 from reportlab.pdfgen import canvas
 
 # Create your views here.
+def solo_empleados(view_func):
+    
+    def wrapper(request, *args, **kwargs):
+
+        if request.user.is_superuser:
+            return view_func(request, *args, **kwargs)
+
+        if hasattr(request.user, "rol") and request.user.rol in ["administrador", "empleado"]:
+            return view_func(request, *args, **kwargs)
+
+        return HttpResponse("No tienes permiso para acceder a ventas")
+
+    return wrapper
+
 @login_required
+@solo_empleados
 def crear_venta(request):
 
     productos = Producto.objects.all()
@@ -56,6 +71,7 @@ def crear_venta(request):
     })
     
 @login_required
+@solo_empleados
 def dashboard(request):
 
     hoy = timezone.now().date()
