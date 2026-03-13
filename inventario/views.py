@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .forms import VentaForm
 from .models import Venta, DetalleVenta, Producto
+from django.utils import timezone
+from torneos.models import Torneo
 
 # Create your views here.
 @login_required
@@ -49,4 +51,28 @@ def crear_venta(request):
 
     return render(request, "inventario/venta.html", {
         "productos": productos
+    })
+    
+@login_required
+def dashboard(request):
+
+    hoy = timezone.now().date()
+
+    ventas_hoy = Venta.objects.filter(
+        fecha__date=hoy
+    )
+
+    total_hoy = sum(v.total for v in ventas_hoy)
+
+    productos_bajo_stock = Producto.objects.filter(
+        stock__lte=5
+    )
+
+    torneos = Torneo.objects.all().order_by("fecha")[:5]
+
+    return render(request, "inventario/dashboard.html", {
+        "ventas_hoy": ventas_hoy.count(),
+        "total_hoy": total_hoy,
+        "productos_bajo_stock": productos_bajo_stock,
+        "torneos": torneos
     })
