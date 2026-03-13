@@ -1,79 +1,89 @@
-{% extends 'base/base.html' %}
+<!DOCTYPE html>
+<html>
+<head>
 
-{% block contenido %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<title>Dashboard</title>
+
+</head>
+
+<body class="bg-light">
+
+<div class="container mt-5">
 
 <h1 class="mb-4">Dashboard LiquorEvents</h1>
 
 <div class="row">
 
-<div class="col-md-4">
-
-<div class="card bg-success text-white mb-3">
-
+<div class="col-md-3">
+<div class="card text-white bg-success mb-3">
 <div class="card-body">
-
-<h5>Ventas hoy</h5>
-
-<h2>{{ ventas_hoy }}</h2>
-
+<h5>Ventas Totales</h5>
+<h3>${{ total_ventas }}</h3>
+</div>
+</div>
 </div>
 
-</div>
-
-</div>
-
-<div class="col-md-4">
-
-<div class="card bg-primary text-white mb-3">
-
+<div class="col-md-3">
+<div class="card text-white bg-primary mb-3">
 <div class="card-body">
+<h5>Cantidad Ventas</h5>
+<h3>{{ cantidad_ventas }}</h3>
+</div>
+</div>
+</div>
 
-<h5>Total vendido hoy</h5>
+<div class="col-md-3">
+<div class="card text-white bg-warning mb-3">
+<div class="card-body">
+<h5>Productos</h5>
+<h3>{{ productos }}</h3>
+</div>
+</div>
+</div>
 
-<h2>${{ total_hoy }}</h2>
-
+<div class="col-md-3">
+<div class="card text-white bg-danger mb-3">
+<div class="card-body">
+<h5>Torneos</h5>
+<h3>{{ torneos }}</h3>
+</div>
+</div>
 </div>
 
 </div>
 
 </div>
-
-</div>
-
 <hr>
 
-<h3>Productos con poco stock</h3>
+<h3>Ventas por día</h3>
 
-<ul>
+<canvas id="graficaVentas"></canvas>
 
-{% for producto in productos_bajo_stock %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<li>
-{{ producto.nombre }} - Stock: {{ producto.stock }}
-</li>
+<script>
 
-{% empty %}
+const datos = JSON.parse('{{ ventas_por_dia|escapejs }}');
 
-<li>No hay productos con bajo stock</li>
+const labels = datos.map(item => item.dia);
+const valores = datos.map(item => item.total);
 
-{% endfor %}
+const ctx = document.getElementById('graficaVentas');
 
-</ul>
+new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: labels,
+        datasets: [{
+            label: 'Ventas por día',
+            data: valores,
+            borderWidth: 2
+        }]
+    }
+});
 
-<hr>
-
-<h3>Próximos torneos</h3>
-
-<ul>
-
-{% for torneo in torneos %}
-
-<li>
-{{ torneo.nombre }} - {{ torneo.fecha }}
-</li>
-
-{% endfor %}
-
-</ul>
-
-{% endblock %}
+</script>
+</body>
+</html>

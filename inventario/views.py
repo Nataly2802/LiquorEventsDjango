@@ -6,7 +6,10 @@ from django.utils import timezone
 from torneos.models import Torneo
 from django.http import HttpResponse
 from reportlab.pdfgen import canvas
-
+from django.db.models import Sum
+from django.db.models.functions import TruncDate
+from django.db.models import Count
+import json
 # Create your views here.
 def solo_empleados(view_func):
     
@@ -73,27 +76,34 @@ def crear_venta(request):
 @login_required
 @solo_empleados
 def dashboard(request):
+    
+    total_ventas = Venta.objects.aggregate(
+        total=Sum('total')
+    )['total'] or 0
 
-    hoy = timezone.now().date()
+    cantidad_ventas = Venta.objects.count()
 
-    ventas_hoy = Venta.objects.filter(
-        fecha__date=hoy
-    )
+    productos = Producto.objects.count()
 
-    total_hoy = sum(v.total for v in ventas_hoy)
+    torneos = Torneo.objects.count()
+    
+    ventas_por_dia = (
+    Venta.objects
+    .annotate(dia=TruncDate('fecha'))
+    .values('dia')
+    .annotate(total=Sum('total'))
+    .order_by('dia')
+)
 
-    productos_bajo_stock = Producto.objects.filter(
-        stock__lte=5
-    )
+    context = {
+    'total_ventas': total_ventas,
+    'cantidad_ventas': cantidad_ventas,
+    'productos': productos,
+    'torneos': torneos,
+    'ventas_por_dia': json.dumps(list(ventas_por_dia), default=str)
+}
 
-    torneos = Torneo.objects.all().order_by("fecha")[:5]
-
-    return render(request, "inventario/dashboard.html", {
-        "ventas_hoy": ventas_hoy.count(),
-        "total_hoy": total_hoy,
-        "productos_bajo_stock": productos_bajo_stock,
-        "torneos": torneos
-    })
+    return render(request, 'inventario/dashboard.html', context)
 
 
 @login_required
