@@ -37,3 +37,14 @@ def inscribirse(request, torneo_id):
         )
 
     return redirect('lista_torneos')
+
+@login_required
+def mis_torneos(request):
+
+    inscripciones = Inscripcion.objects.filter(
+        participante=request.user
+    )
+
+    return render(request, "torneos/mis_torneos.html", {
+        "inscripciones": inscripciones
+    })

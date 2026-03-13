@@ -1,0 +1,44 @@
+{% extends 'base/base.html' %}
+
+{% block contenido %}
+
+<h1 class="mb-4">Mis Torneos</h1>
+
+<div class="row">
+
+{% for inscripcion in inscripciones %}
+
+<div class="col-md-4">
+
+<div class="card mb-4 shadow">
+
+<div class="card-body">
+
+<h5 class="card-title">
+{{ inscripcion.torneo.nombre }}
+</h5>
+
+<p>
+{{ inscripcion.torneo.descripcion }}
+</p>
+
+<p>
+<strong>Fecha:</strong>
+{{ inscripcion.torneo.fecha }}
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+{% empty %}
+
+<p>No estás inscrito en ningún torneo</p>
+
+{% endfor %}
+
+</div>
+
+{% endblock %}
