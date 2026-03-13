@@ -10,6 +10,7 @@ from django.db.models import Sum
 from django.db.models.functions import TruncDate
 from django.db.models import Count
 import json
+from torneos.models import Torneo
 # Create your views here.
 def solo_empleados(view_func):
     
@@ -30,11 +31,20 @@ def solo_empleados(view_func):
 def crear_venta(request):
 
     productos = Producto.objects.all()
+    torneos = Torneo.objects.all()
 
     if request.method == "POST":
 
+        torneo_id = request.POST.get("torneo")
+
+        torneo = None
+
+        if torneo_id:
+            torneo = Torneo.objects.get(id=torneo_id)
+
         venta = Venta.objects.create(
-            empleado=request.user
+            empleado=request.user,
+            torneo=torneo
         )
 
         total = 0
@@ -70,7 +80,8 @@ def crear_venta(request):
         return redirect("/venta/")
 
     return render(request, "inventario/venta.html", {
-        "productos": productos
+        "productos": productos,
+        "torneos": torneos
     })
     
 @login_required

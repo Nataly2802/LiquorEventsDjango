@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from torneos.models import Torneo
 # Create your models here.
 
 class Producto(models.Model):
@@ -16,16 +17,26 @@ class Producto(models.Model):
     def __str__(self):
         return self.nombre
     
+from torneos.models import Torneo
+
 class Venta(models.Model):
-    
+
     empleado = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+
+    torneo = models.ForeignKey(
+        Torneo,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
+
+    total = models.DecimalField(max_digits=10, decimal_places=2)
 
     fecha = models.DateTimeField(auto_now_add=True)
 
-    total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    total = models.DecimalField(max_digits=10, decimal_places=2)
 
-    def __str__(self):
-        return f"Venta {self.id} - {self.fecha}"
+    fecha = models.DateTimeField(auto_now_add=True)
     
 class DetalleVenta(models.Model):
     

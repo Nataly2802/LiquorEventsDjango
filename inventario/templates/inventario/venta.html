@@ -3,7 +3,23 @@
 {% block contenido %}
 
 <h2 class="mb-4">Registrar Venta</h2>
+<label>Torneo</label>
 
+<select name="torneo">
+
+<option value="">Venta normal</option>
+
+{% for torneo in torneos %}
+
+<option value="{{ torneo.id }}">
+{{ torneo.nombre }}
+</option>
+
+{% endfor %}
+
+</select>
+
+<br><br>
 <form method="POST">
 
 {% csrf_token %}
