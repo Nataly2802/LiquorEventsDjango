@@ -85,5 +85,26 @@ new Chart(ctx, {
 });
 
 </script>
+<hr>
+
+<h3>Ventas por torneo</h3>
+
+<table class="table">
+
+<tr>
+<th>Torneo</th>
+<th>Total vendido</th>
+</tr>
+
+{% for v in ventas_por_torneo %}
+
+<tr>
+<td>{{ v.torneo__nombre|default:"Venta normal" }}</td>
+<td>${{ v.total }}</td>
+</tr>
+
+{% endfor %}
+
+</table>
 </body>
 </html>

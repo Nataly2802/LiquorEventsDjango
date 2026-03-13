@@ -3,9 +3,14 @@
 {% block contenido %}
 
 <h2 class="mb-4">Registrar Venta</h2>
+
+<form method="POST">
+
+{% csrf_token %}
+
 <label>Torneo</label>
 
-<select name="torneo">
+<select name="torneo" class="form-control">
 
 <option value="">Venta normal</option>
 
@@ -20,9 +25,6 @@
 </select>
 
 <br><br>
-<form method="POST">
-
-{% csrf_token %}
 
 <table class="table table-striped">
 

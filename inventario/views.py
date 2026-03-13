@@ -36,7 +36,7 @@ def crear_venta(request):
     if request.method == "POST":
 
         torneo_id = request.POST.get("torneo")
-
+        print("TORNEO RECIBIDO:", torneo_id)
         torneo = None
 
         if torneo_id:
@@ -44,7 +44,8 @@ def crear_venta(request):
 
         venta = Venta.objects.create(
             empleado=request.user,
-            torneo=torneo
+            torneo=torneo,
+            total=0
         )
 
         total = 0
@@ -81,7 +82,7 @@ def crear_venta(request):
 
     return render(request, "inventario/venta.html", {
         "productos": productos,
-        "torneos": torneos
+        "torneos": Torneo.objects.all()
     })
     
 @login_required
@@ -105,13 +106,20 @@ def dashboard(request):
     .annotate(total=Sum('total'))
     .order_by('dia')
 )
-
+    ventas_por_torneo = (
+    Venta.objects
+    .select_related("torneo")
+    .values("torneo__nombre")
+    .annotate(total=Sum("total"))
+    .order_by("torneo__nombre")
+)
     context = {
     'total_ventas': total_ventas,
     'cantidad_ventas': cantidad_ventas,
     'productos': productos,
     'torneos': torneos,
-    'ventas_por_dia': json.dumps(list(ventas_por_dia), default=str)
+    'ventas_por_dia': json.dumps(list(ventas_por_dia), default=str),
+    'ventas_por_torneo': ventas_por_torneo
 }
 
     return render(request, 'inventario/dashboard.html', context)
