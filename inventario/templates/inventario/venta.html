@@ -2,16 +2,60 @@
 
 {% block contenido %}
 
-<h2>Registrar Venta</h2>
+<h2 class="mb-4">Registrar Venta</h2>
 
 <form method="POST">
 
 {% csrf_token %}
 
-{{ form.as_p }}
+<table class="table table-striped">
+
+<thead>
+
+<tr>
+<th>Producto</th>
+<th>Precio</th>
+<th>Stock</th>
+<th>Cantidad</th>
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for producto in productos %}
+
+<tr>
+
+<td>{{ producto.nombre }}</td>
+
+<td>${{ producto.precio }}</td>
+
+<td>{{ producto.stock }}</td>
+
+<td>
+
+<input 
+type="number"
+name="cantidad_{{ producto.id }}"
+min="0"
+max="{{ producto.stock }}"
+value="0"
+class="form-control"
+>
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
 
 <button class="btn btn-success">
-Registrar venta
+Registrar Venta
 </button>
 
 </form>

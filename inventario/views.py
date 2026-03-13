@@ -7,43 +7,46 @@ from .models import Venta, DetalleVenta, Producto
 @login_required
 def crear_venta(request):
 
+    productos = Producto.objects.all()
+
     if request.method == "POST":
 
-        form = VentaForm(request.POST)
+        venta = Venta.objects.create(
+            empleado=request.user
+        )
 
-        if form.is_valid():
+        total = 0
 
-            producto = form.cleaned_data["producto"]
-            cantidad = form.cleaned_data["cantidad"]
+        for producto in productos:
 
-            if producto.stock >= cantidad:
+            cantidad = request.POST.get(f"cantidad_{producto.id}")
 
-                venta = Venta.objects.create(
-                    empleado=request.user
-                )
+            if cantidad:
 
-                subtotal = producto.precio * cantidad
+                cantidad = int(cantidad)
 
-                DetalleVenta.objects.create(
-                    venta=venta,
-                    producto=producto,
-                    cantidad=cantidad,
-                    precio=producto.precio,
-                    subtotal=subtotal
-                )
+                if cantidad > 0 and producto.stock >= cantidad:
 
-                venta.total = subtotal
-                venta.save()
+                    subtotal = producto.precio * cantidad
 
-                producto.stock -= cantidad
-                producto.save()
+                    DetalleVenta.objects.create(
+                        venta=venta,
+                        producto=producto,
+                        cantidad=cantidad,
+                        precio=producto.precio,
+                        subtotal=subtotal
+                    )
 
-                return redirect("/")
+                    producto.stock -= cantidad
+                    producto.save()
 
-    else:
+                    total += subtotal
 
-        form = VentaForm()
+        venta.total = total
+        venta.save()
+
+        return redirect("/venta/")
 
     return render(request, "inventario/venta.html", {
-        "form": form
+        "productos": productos
     })
