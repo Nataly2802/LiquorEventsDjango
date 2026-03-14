@@ -1,25 +1,15 @@
-<!DOCTYPE html>
-<html>
-<head>
+{% extends 'base/base.html' %}
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+{% block contenido %}
 
-<title>Dashboard</title>
-
-</head>
-
-<body class="bg-light">
-
-<div class="container mt-5">
-
-<h1 class="mb-4">Dashboard LiquorEvents</h1>
+<h2 class="mb-4">Panel de Administración</h2>
 
 <div class="row">
 
 <div class="col-md-3">
 <div class="card text-white bg-success mb-3">
 <div class="card-body">
-<h5>Ventas Totales</h5>
+<h5 class="card-title">Ventas Totales</h5>
 <h3>${{ total_ventas }}</h3>
 </div>
 </div>
@@ -28,16 +18,16 @@
 <div class="col-md-3">
 <div class="card text-white bg-primary mb-3">
 <div class="card-body">
-<h5>Cantidad Ventas</h5>
+<h5 class="card-title">Cantidad Ventas</h5>
 <h3>{{ cantidad_ventas }}</h3>
 </div>
 </div>
 </div>
 
 <div class="col-md-3">
-<div class="card text-white bg-warning mb-3">
+<div class="card text-dark bg-warning mb-3">
 <div class="card-body">
-<h5>Productos</h5>
+<h5 class="card-title">Productos</h5>
 <h3>{{ productos }}</h3>
 </div>
 </div>
@@ -46,7 +36,7 @@
 <div class="col-md-3">
 <div class="card text-white bg-danger mb-3">
 <div class="card-body">
-<h5>Torneos</h5>
+<h5 class="card-title">Torneos</h5>
 <h3>{{ torneos }}</h3>
 </div>
 </div>
@@ -54,57 +44,142 @@
 
 </div>
 
+<hr>
+
+<h4 class="mt-4">Accesos rápidos</h4>
+
+<div class="row mt-3">
+
+<div class="col-md-3">
+<a href="/venta/" class="btn btn-success w-100">
+Registrar Venta
+</a>
+</div>
+
+<div class="col-md-3">
+<a href="/admin/inventario/producto/" class="btn btn-primary w-100">
+Administrar Productos
+</a>
+</div>
+
+<div class="col-md-3">
+<a href="/admin/torneos/torneo/" class="btn btn-warning w-100">
+Administrar Torneos
+</a>
+</div>
+
+<div class="col-md-3">
+<a href="/admin/" class="btn btn-dark w-100">
+Panel Django
+</a>
+</div>
+
 </div>
 <hr>
 
-<h3>Ventas por día</h3>
+<h4>Ventas por día</h4>
 
-<canvas id="graficaVentas"></canvas>
+<canvas id="graficoVentas"></canvas>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<script>
-
-const datos = JSON.parse('{{ ventas_por_dia|escapejs }}');
-
-const labels = datos.map(item => item.dia);
-const valores = datos.map(item => item.total);
-
-const ctx = document.getElementById('graficaVentas');
-
-new Chart(ctx, {
-    type: 'bar',
-    data: {
-        labels: labels,
-        datasets: [{
-            label: 'Ventas por día',
-            data: valores,
-            borderWidth: 2
-        }]
-    }
-});
-
-</script>
+<hr>
 <hr>
 
-<h3>Ventas por torneo</h3>
+<h4>Ventas por torneo</h4>
 
-<table class="table">
+<canvas id="graficoTorneos"></canvas>
+
+<h4>Productos más vendidos</h4>
+
+<table class="table table-striped">
 
 <tr>
-<th>Torneo</th>
-<th>Total vendido</th>
+<th>Producto</th>
+<th>Cantidad vendida</th>
 </tr>
 
-{% for v in ventas_por_torneo %}
+{% for p in productos_mas_vendidos %}
 
 <tr>
-<td>{{ v.torneo__nombre|default:"Venta normal" }}</td>
-<td>${{ v.total }}</td>
+<td>{{ p.producto__nombre }}</td>
+<td>{{ p.total_vendido }}</td>
 </tr>
 
 {% endfor %}
 
 </table>
-</body>
-</html>
+
+<hr>
+
+<h4>Inventario bajo</h4>
+
+<table class="table table-danger">
+
+<tr>
+<th>Producto</th>
+<th>Stock</th>
+</tr>
+
+{% for producto in inventario_bajo %}
+
+<tr>
+<td>{{ producto.nombre }}</td>
+<td>{{ producto.stock }}</td>
+</tr>
+
+{% empty %}
+
+<tr>
+<td colspan="2">Inventario correcto</td>
+</tr>
+
+{% endfor %}
+
+</table>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+let ventas = {{ ventas_por_dia|safe }}
+
+let labels = ventas.map(v => v.dia)
+let datos = ventas.map(v => v.total)
+
+new Chart(document.getElementById("graficoVentas"), {
+
+type: "bar",
+
+data: {
+labels: labels,
+datasets: [{
+label: "Ventas",
+data: datos
+}]
+}
+
+})
+
+</script>
+<script>
+
+let torneos = {{ ventas_por_torneo|safe }}
+
+let labelsTorneos = torneos.map(t => t.torneo)
+let datosTorneos = torneos.map(t => t.total)
+
+new Chart(document.getElementById("graficoTorneos"), {
+
+type: "bar",
+
+data: {
+labels: labelsTorneos,
+datasets: [{
+label: "Ventas por torneo",
+data: datosTorneos
+}]
+}
+
+})
+
+</script>
+{% endblock %}

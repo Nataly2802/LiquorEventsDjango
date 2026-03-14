@@ -106,20 +106,51 @@ def dashboard(request):
     .annotate(total=Sum('total'))
     .order_by('dia')
 )
-    ventas_por_torneo = (
+    ventas = (
     Venta.objects
-    .select_related("torneo")
     .values("torneo__nombre")
     .annotate(total=Sum("total"))
-    .order_by("torneo__nombre")
 )
+
+    ventas_por_torneo = []
+
+    for torneo in Torneo.objects.all():
+
+        total = Venta.objects.filter(
+        torneo=torneo
+    ).aggregate(total=Sum("total"))["total"] or 0
+
+    ventas_por_torneo.append({
+        "torneo": torneo.nombre,
+        "total": float(total)
+    })
+
+    total_normal = Venta.objects.filter(
+        torneo__isnull=True
+    ).aggregate(total=Sum("total"))["total"] or 0
+
+    ventas_por_torneo.append({
+        "torneo": "Venta normal",
+        "total": float(total_normal)
+})
+        
+    productos_mas_vendidos = (
+    DetalleVenta.objects
+    .values("producto__nombre")
+    .annotate(total_vendido=Sum("cantidad"))
+    .order_by("-total_vendido")[:5]
+)
+    inventario_bajo = Producto.objects.filter(stock__lte=5)
+    
     context = {
     'total_ventas': total_ventas,
     'cantidad_ventas': cantidad_ventas,
     'productos': productos,
     'torneos': torneos,
     'ventas_por_dia': json.dumps(list(ventas_por_dia), default=str),
-    'ventas_por_torneo': ventas_por_torneo
+    'ventas_por_torneo': json.dumps(ventas_por_torneo),
+    'productos_mas_vendidos': productos_mas_vendidos,
+    'inventario_bajo': inventario_bajo
 }
 
     return render(request, 'inventario/dashboard.html', context)
