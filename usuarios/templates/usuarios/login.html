@@ -1,24 +1,53 @@
-<!DOCTYPE html>
-<html>
+{% extends 'base/base.html' %}
+{% block contenido %}
 
-<head>
-    <title>Iniciar sesión</title>
-</head>
+<div class="row justify-content-center">
 
-<body>
+<div class="col-md-4">
 
-<h1>Iniciar sesión</h1>
+<div class="card shadow">
+
+<div class="card-header bg-dark text-white text-center">
+<h4>Iniciar sesión</h4>
+</div>
+
+<div class="card-body">
+
+{% if form.errors %}
+<div class="alert alert-danger text-center">
+Usuario o contraseña incorrectos
+</div>
+{% endif %}
+
 
 <form method="POST">
 
-    {% csrf_token %}
+{% csrf_token %}
 
-    {{ form.as_p }}
+<div class="mb-3">
+<label class="form-label">Usuario</label>
+<input type="text" name="username" class="form-control" placeholder="Ingrese su usuario">
+</div>
 
-    <button type="submit">Entrar</button>
+<div class="mb-3">
+<label class="form-label">Contraseña</label>
+<input type="password" name="password" class="form-control" placeholder="Ingrese su contraseña">
+</div>
+
+<div class="d-grid">
+<button class="btn btn-success">
+Entrar
+</button>
+</div>
 
 </form>
 
-</body>
+</div>
 
-</html>
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}
