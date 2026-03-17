@@ -1,22 +1,89 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro</title>
-</head>
-<body>
-    <h1>Registro de participante</h1>
+{% extends "base/base.html" %}
+
+{% block contenido %}
+
+<style>
+body{
+min-height:100vh;
+}
+
+.registro-card{
+margin-top:50px;
+border-radius:10px;
+}
+</style>
+
+<div class="row justify-content-center">
+
+<div class="col-md-5">
+
+<div class="card shadow-lg registro-card">
+
+<div class="card-header bg-dark text-white text-center">
+<h4>Registro de participante</h4>
+</div>
+
+<div class="card-body">
 
 <form method="POST">
 
-    {% csrf_token %}
+{% csrf_token %}
 
-    {{ form.as_p }}
+<div class="mb-3">
+<label class="form-label">Usuario</label>
+<div class="input-group">
+<span class="input-group-text"></span>
+{{ form.username }}
+</div>
+<small class="text-muted">Máx. 150 caracteres</small>
+</div>
 
-    <button type="submit">Registrarse</button>
+<div class="mb-3">
+<label class="form-label">Correo electrónico</label>
+<div class="input-group">
+<span class="input-group-text"></span>
+{{ form.email }}
+</div>
+</div>
+
+<div class="mb-3">
+<label class="form-label">Contraseña</label>
+<div class="input-group">
+<span class="input-group-text"></span>
+{{ form.password1 }}
+</div>
+
+<div class="form-text">
+<ul class="mb-0">
+<li>Debe tener al menos 8 caracteres</li>
+<li>No puede ser muy común</li>
+<li>No puede ser solo números</li>
+</ul>
+</div>
+</div>
+
+<div class="mb-3">
+<label class="form-label">Confirmar contraseña</label>
+<div class="input-group">
+<span class="input-group-text"></span>
+{{ form.password2 }}
+</div>
+</div>
+
+<div class="d-grid">
+<button class="btn btn-success">
+Registrarse
+</button>
+</div>
 
 </form>
 
-</body>
-</html>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}
