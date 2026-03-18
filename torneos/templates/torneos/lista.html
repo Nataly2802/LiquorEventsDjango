@@ -3,86 +3,77 @@
 {% block contenido %}
 
 <h1 class="mb-4">Torneos Disponibles</h1>
+
 {% if request.user.is_authenticated and request.user.rol != 'participante' %}
     <a href="{% url 'crear_torneo' %}" class="btn btn-success mb-3">
         Crear torneo
     </a>
 {% endif %}
+
 <div class="row">
+    {% for torneo in torneos %}
+    <div class="col-md-4">
+        <div class="card mb-4 shadow">
+            
+            <!-- BLOQUE DE IMAGEN: Solo se muestra si NO está logueado -->
+            {% if not request.user.is_authenticated %}
+                {% if torneo.imagen %}
+                    <img src="{{ torneo.imagen.url }}" class="card-img-top" alt="{{ torneo.nombre }}" style="height: 200px; object-fit: cover;">
+                {% else %}
+                    <!-- Imagen opcional por defecto si el torneo no tiene foto -->
+                    <div class="bg-light text-center py-5 border-bottom">
+                        <small class="text-muted">Sin imagen disponible</small>
+                    </div>
+                {% endif %}
+            {% endif %}
 
-{% for torneo in torneos %}
+            <div class="card-body">
+                <h5 class="card-title">{{ torneo.nombre }}</h5>
+                <p class="card-text">{{ torneo.descripcion }}</p>
+                
+                <p><strong>Fecha:</strong> {{ torneo.fecha }}</p>
+                <p>Cupos máximos: {{ torneo.cupo_maximo }}</p>
+                <p>Inscritos: {{ torneo.total_inscritos }}</p>
+                <p>Cupos disponibles: {{ torneo.cupos_disponibles }}</p> 
 
-<div class="col-md-4">
+                {% if torneo.id in inscritos %}
+                    <p class="text-success">Ya estás inscrito</p>
+                    {% if request.user.rol == 'participante' %}
+                        <a href="{% url 'cancelar_inscripcion' torneo.id %}" class="btn btn-danger btn-sm">
+                            Cancelar inscripción
+                        </a>
+                    {% endif %}
+                {% elif torneo.cupos_disponibles <= 0 %}
+                    <p class="text-danger">Torneo lleno</p>
+                {% else %}
+                    {% if request.user.is_authenticated %}
+                        <a href="{% url 'inscribirse' torneo.id %}" class="btn btn-primary btn-sm">
+                            Inscribirse
+                        </a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn btn-warning btn-sm">
+                            Inicia sesión para inscribirte
+                        </a>
+                    {% endif %}
+                {% endif %}
 
-<div class="card mb-4 shadow">
-
-<div class="card-body">
-
-<h5 class="card-title">{{ torneo.nombre }}</h5>
-
-<p class="card-text">{{ torneo.descripcion }}</p>
-
-<p>
-<strong>Fecha:</strong> {{ torneo.fecha }}
-</p>
-
-<p>Cupos máximos: {{ torneo.cupo_maximo }}</p>
-<p>Inscritos: {{ torneo.total_inscritos }}</p>
-<p>Cupos disponibles: {{ torneo.cupos_disponibles }}</p> 
-{% if torneo.id in inscritos %}
-
-    <p class="text-success">Ya estás inscrito</p>
-
-    {% if request.user.rol == 'participante' %}
-        <a href="{% url 'cancelar_inscripcion' torneo.id %}" class="btn btn-danger btn-sm">
-            Cancelar inscripción
-        </a>
-    {% endif %}
-
-{% elif torneo.cupos_disponibles <= 0 %}
-
-    <p class="text-danger">Torneo lleno</p>
-
-{% else %}
-
-    {% if request.user.is_authenticated %}
-        <a href="{% url 'inscribirse' torneo.id %}" class="btn btn-primary btn-sm">
-            Inscribirse
-        </a>
-    {% else %}
-        <a href="{% url 'login' %}" class="btn btn-warning btn-sm">
-            Inicia sesión para inscribirte
-        </a>
-    {% endif %}
-
-    {% endif %}
-    {% if request.user.is_authenticated and request.user.rol != 'participante' %}
-    <a href="{% url 'ver_inscritos' torneo.id %}" class="btn btn-dark btn-sm mt-2">
-        Ver inscritos
-    </a>
-    {% if request.user.is_authenticated and request.user.rol != 'participante' %}
-    <a href="{% url 'editar_torneo' torneo.id %}" class="btn btn-warning btn-sm mt-2">
-        Editar
-    </a>
-    <a href="{% url 'eliminar_torneo' torneo.id %}" class="btn btn-danger btn-sm mt-2">
-        Eliminar
-    </a>
-    {% endif %}
-    {% endif %}
-    
-
-</div>
-
-</div>
-
-</div>
-
-{% empty %}
-
-<p>No hay torneos disponibles</p>
-
-{% endfor %}
-
+                {% if request.user.is_authenticated and request.user.rol != 'participante' %}
+                    <a href="{% url 'ver_inscritos' torneo.id %}" class="btn btn-dark btn-sm mt-2">
+                        Ver inscritos
+                    </a>
+                    <a href="{% url 'editar_torneo' torneo.id %}" class="btn btn-warning btn-sm mt-2">
+                        Editar
+                    </a>
+                    <a href="{% url 'eliminar_torneo' torneo.id %}" class="btn btn-danger btn-sm mt-2">
+                        Eliminar
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% empty %}
+        <p>No hay torneos disponibles</p>
+    {% endfor %}
 </div>
 
 {% endblock %}

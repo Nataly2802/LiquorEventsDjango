@@ -6,6 +6,7 @@ class Torneo(models.Model):
     descripcion = models.TextField()
     fecha = models.DateField()
     cupo_maximo = models.IntegerField()
+    imagen = models.ImageField(upload_to='IMG/torneos/', null=True, blank=True)
     
     def __str__(self):
         return self.nombre
