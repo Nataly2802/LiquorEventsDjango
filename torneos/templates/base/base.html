@@ -14,11 +14,12 @@
                 {% if user.is_authenticated %}
                     <span class="text-white me-3">Bienvenido {{ user.username }}</span>
                     
-                    {% if user.rol == 'participante' %}
-                        <a class="btn btn-outline-light btn-sm me-2" href="{% url 'mis_torneos' %}">Mis torneos</a>
-                    {% else %}
-                        <a class="btn btn-outline-light btn-sm me-2" href="{% url 'lista_torneos' %}">Torneos</a>
-                    {% endif %}
+                    <a class="btn btn-outline-light btn-sm me-2" href="{% url 'lista_torneos' %}">Torneos</a>
+
+                {% if user.rol == 'participante' %}
+                    <a class="btn btn-outline-light btn-sm me-2" href="{% url 'mis_torneos' %}">Mis torneos</a>
+                {% endif %}
+
 
                     {% if user.rol == 'admin' or user.rol == 'empleado' or user.is_superuser %}
                         <a class="btn btn-info btn-sm me-2" href="/dashboard/">Panel</a>
