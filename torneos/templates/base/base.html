@@ -4,6 +4,27 @@
     <meta charset="UTF-8">
     <title>LiquorEvents</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+    .custom-footer {
+        background-color: #f0f7fb;
+        padding: 15px 0;
+        border-top: 1px solid #d1e3ef;
+    }
+
+    .footer-link {
+        color: #1a8754 !important;
+        text-decoration: none;
+        font-size: 14px;
+        margin: 0 5px;
+    }
+
+    .footer-copy {
+        color: #1a8754 !important;
+        font-size: 14px;
+        margin-top: 5px;
+    }
+</style>
+
 </head>
 
 <body>
@@ -53,5 +74,20 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net"></script>
+<footer class="custom-footer text-center mt-auto">
+    <div class="container">
+        <div class="d-flex justify-content-center flex-wrap">
+            <a href="#" class="footer-link">Política de Privacidad</a>
+            <a href="#" class="footer-link">Aviso Legal</a>
+            <a href="#" class="footer-link">Cookies</a>
+        </div>
+        
+        <p class="footer-copy mb-0">
+            &copy; Mi Aplicación {% now "Y" %}
+        </p>
+    </div>
+</footer>
+
+
 </body>
 </html>
