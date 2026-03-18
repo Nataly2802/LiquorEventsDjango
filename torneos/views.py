@@ -146,5 +146,9 @@ def eliminar_torneo(request, torneo_id):
 
     return redirect('lista_torneos')
 
+def redireccion_login(request):
+    if request.user.rol == 'participante':
+        return redirect('lista_torneos')
+    return redirect('/dashboard')
 
 
