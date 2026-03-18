@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -23,14 +24,31 @@
         font-size: 14px;
         margin-top: 5px;
     }
-</style>
+    .navbar-brand img {
+    border-radius: 2px; 
+    transition: transform 0.3s;
+    }
+
+    .navbar-brand:hover img {
+    transform: scale(1.1);
+    }
+
+    </style>
 
 </head>
 
 <body>
+    
     <nav class="navbar navbar-dark bg-dark">
         <div class="container">
-            <a class="navbar-brand" href="/">LiquorEvents</a>
+            <a class="navbar-brand" href="/">
+                <img src="{% static 'IMG/logo.jpg' %}" 
+                 alt="Logo" 
+                 width="40" 
+                 height="40" 
+                 class="d-inline-block align-text-top me-2">
+            <span>LiquorEvents</span>
+            </a>
             <div>
                 {% if user.is_authenticated %}
                     <span class="text-white me-3">Bienvenido {{ user.username }}</span>
