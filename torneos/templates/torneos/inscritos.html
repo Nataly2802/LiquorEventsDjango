@@ -1,0 +1,23 @@
+{% extends 'base/base.html' %}
+
+{% block contenido %}
+
+<h2 class="mb-4">Inscritos en {{ torneo.nombre }}</h2>
+
+<ul class="list-group">
+    {% for inscripcion in inscritos %}
+        <li class="list-group-item d-flex justify-content-between">
+            {{ inscripcion.participante.username }}
+        </li>
+    {% empty %}
+        <li class="list-group-item">
+            No hay inscritos en este torneo
+        </li>
+    {% endfor %}
+</ul>
+
+<a href="{% url 'lista_torneos' %}" class="btn btn-secondary mt-3">
+    Volver
+</a>
+
+{% endblock %}

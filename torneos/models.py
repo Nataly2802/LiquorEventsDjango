@@ -5,7 +5,7 @@ class Torneo(models.Model):
     nombre = models.CharField(max_length=100)
     descripcion = models.TextField()
     fecha = models.DateField()
-    cupos = models.IntegerField()
+    cupo_maximo = models.IntegerField()
     
     def __str__(self):
         return self.nombre
