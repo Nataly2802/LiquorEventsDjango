@@ -1,0 +1,112 @@
+{% extends 'base/base.html' %}
+
+{% block contenido %}
+
+<h2>Listado de Ventas</h2>
+<form method="GET" action="/ventas/excel/" class="mb-3">
+
+    <input type="hidden" name="fecha" value="{{ request.GET.fecha }}">
+    <input type="hidden" name="torneo" value="{{ request.GET.torneo }}">
+    <input type="hidden" name="producto" value="{{ request.GET.producto }}">
+
+    <button class="btn btn-success btn-sm me-2">
+        Exportar a Excel
+    </button>
+
+</form>
+<form method="GET" action="/ventas/pdf/" class="mb-3">
+
+    <input type="hidden" name="fecha" value="{{ request.GET.fecha }}">
+    <input type="hidden" name="torneo" value="{{ request.GET.torneo }}">
+    <input type="hidden" name="producto" value="{{ request.GET.producto }}">
+
+    <button class="btn btn-danger btn-sm me-2">
+        Exportar PDF
+    </button>
+
+</form><a class="btn btn-success btn-sm me-2" href="/venta/">Nueva Venta</a>
+<form method="GET" class="mb-3">
+
+<div class="row">
+<div class="col-md-4">
+<label>Buscar por torneo</label>
+<input type="text" name="torneo" class="form-control">
+</div>
+
+<div class="col-md-4">
+<label>Filtrar por fecha</label>
+<input type="date" name="fecha" class="form-control">
+</div>
+
+<div class="col-md-4">
+<label>Buscar por producto</label>
+<input type="text" name="producto" class="form-control">
+</div>
+
+<div class="col-md-4 mt-4">
+<button class="btn btn-primary">Filtrar</button>
+<a href="/ventas/" class="btn btn-secondary">Limpiar</a>
+</div>
+
+</div>
+
+</form>
+<table class="table table-bordered">
+
+<thead>
+<tr>
+<th>ID</th>
+<th>Empleado</th>
+<th>Torneo</th>
+<th>Total</th>
+<th>Fecha</th>
+<th>Acciones</th>
+</tr>
+</thead>
+
+<tbody>
+
+{% for venta in ventas %}
+
+<tr>
+<td>{{ venta.id }}</td>
+<td>{{ venta.empleado.username }}</td>
+<td>
+{% if venta.torneo %}
+{{ venta.torneo.nombre }}
+{% else %}
+Venta normal
+{% endif %}
+</td>
+<td>$ {{ venta.total }}</td>
+<td>{{ venta.fecha }}</td>
+
+<td>
+<a href="/ticket/{{ venta.id }}/" class="btn btn-sm btn-primary">
+Ver Ticket
+</a>
+<a href="/ventas/{{ venta.id }}/" class="btn btn-sm btn-info">
+Ver Detalle
+</a>
+<a href="/ventas/eliminar/{{ venta.id }}/" 
+   class="btn btn-sm btn-danger"
+   onclick="return confirm('¿Seguro que deseas eliminar esta venta?')">
+   Eliminar
+</a>
+</td>
+
+</tr>
+
+{% empty %}
+
+<tr>
+<td colspan="6">No hay ventas registradas</td>
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+{% endblock %}

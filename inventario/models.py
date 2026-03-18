@@ -20,7 +20,7 @@ class Producto(models.Model):
 from torneos.models import Torneo
 
 class Venta(models.Model):
-
+    
     empleado = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     torneo = models.ForeignKey(
@@ -32,11 +32,14 @@ class Venta(models.Model):
 
     total = models.DecimalField(max_digits=10, decimal_places=2)
 
+    pago = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+
+    cambio = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+
     fecha = models.DateTimeField(auto_now_add=True)
 
-    total = models.DecimalField(max_digits=10, decimal_places=2)
-
-    fecha = models.DateTimeField(auto_now_add=True)
+    def __str__(self):
+        return f"Venta #{self.id} - {self.fecha}"
     
 class DetalleVenta(models.Model):
     

@@ -1,0 +1,55 @@
+{% extends 'base/base.html' %}
+
+{% block contenido %}
+
+<h2>Detalle de Venta #{{ venta.id }}</h2>
+
+<p><strong>Empleado:</strong> {{ venta.empleado.username }}</p>
+
+<p><strong>Torneo:</strong> 
+{% if venta.torneo %}
+{{ venta.torneo.nombre }}
+{% else %}
+Venta normal
+{% endif %}
+</p>
+
+<p><strong>Fecha:</strong> {{ venta.fecha }}</p>
+
+<hr>
+
+<table class="table table-bordered">
+
+<thead>
+<tr>
+<th>Producto</th>
+<th>Cantidad</th>
+<th>Precio</th>
+<th>Subtotal</th>
+</tr>
+</thead>
+
+<tbody>
+
+{% for d in detalles %}
+<tr>
+<td>{{ d.producto.nombre }}</td>
+<td>{{ d.cantidad }}</td>
+<td>$ {{ d.precio }}</td>
+<td>$ {{ d.subtotal }}</td>
+</tr>
+{% endfor %}
+
+</tbody>
+
+</table>
+
+<hr>
+
+<h4>Total: $ {{ venta.total }}</h4>
+<h5>Pago: $ {{ venta.pago }}</h5>
+<h5>Cambio: $ {{ venta.cambio }}</h5>
+
+<a href="/ventas/" class="btn btn-secondary">Volver</a>
+
+{% endblock %}

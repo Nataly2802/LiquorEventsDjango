@@ -47,7 +47,12 @@
 
 <td>{{ producto.nombre }}</td>
 
-<td>$ {{ producto.precio|floatformat:0|intcomma }}</td>
+<td 
+class="precio" 
+data-precio="{{ producto.precio }}"
+>
+$ {{ producto.precio|floatformat:0|intcomma }}
+</td>
 
 <td>{{ producto.stock }}</td>
 
@@ -56,6 +61,7 @@
 <input 
 type="number"
 name="cantidad_{{ producto.id }}"
+class="form-control cantidad"
 min="0"
 max="{{ producto.stock }}"
 value="0"
@@ -71,11 +77,54 @@ class="form-control"
 </tbody>
 
 </table>
+<div class="row mt-4">
 
-<button class="btn btn-success">
-Registrar Venta
-</button>
+<div class="col-md-4">
+<label>Total</label>
+<input type="text" id="total" class="form-control" readonly value="0">
+</div>
 
+<div class="col-md-4">
+<label>Pago</label>
+<input type="number" name="pago" id="pago" class="form-control" required>
+</div>
+
+<div class="col-md-4">
+<label>Cambio</label>
+<input type="text" id="cambio" class="form-control" readonly value="0">
+</div>
+
+</div>
+
+<br>
+<div style="display: flex; gap: 10px;">
+    <button type="submit" class="btn btn-success">Registrar Venta</button>
+    <a href="{% url 'lista_ventas' %}" class="btn btn-secondary mt-3">Cancelar</a>
+</div>
 </form>
+<script>
+function calcularTotal() {
+    let total = 0;
 
+    document.querySelectorAll("tbody tr").forEach(row => {
+        let precio = parseFloat(row.querySelector(".precio").dataset.precio);
+        let cantidad = parseInt(row.querySelector(".cantidad").value) || 0;
+
+        total += precio * cantidad;
+    });
+
+    document.getElementById("total").value = total;
+
+    let pago = parseFloat(document.getElementById("pago").value) || 0;
+    let cambio = pago - total;
+
+    document.getElementById("cambio").value = cambio >= 0 ? cambio : 0;
+}
+
+document.querySelectorAll(".cantidad").forEach(input => {
+    input.addEventListener("input", calcularTotal);
+});
+
+document.getElementById("pago").addEventListener("input", calcularTotal);
+</script>
 {% endblock %}
