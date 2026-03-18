@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'usuarios',
     'inventario',
     'django.contrib.humanize',
+    'crispy_forms',
+    'crispy_bootstrap5',
 ]
 
 MIDDLEWARE = [
@@ -124,3 +126,5 @@ AUTH_USER_MODEL = 'usuarios.Usuario'
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = 'redireccion_rol'
 LOGOUT_REDIRECT_URL = 'lista_torneos'
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"

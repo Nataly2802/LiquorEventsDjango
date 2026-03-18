@@ -72,7 +72,7 @@ def crear_torneo(request):
         return HttpResponseForbidden("No tienes permiso para crear torneos")
 
     if request.method == 'POST':
-        form = TorneoForm(request.POST)
+        form = TorneoForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
             messages.success(request, "Torneo creado correctamente")
@@ -123,7 +123,7 @@ def editar_torneo(request, torneo_id):
         return HttpResponseForbidden("No tienes permiso para editar torneos")
 
     if request.method == 'POST':
-        form = TorneoForm(request.POST, instance=torneo)
+        form = TorneoForm(request.POST, request.FILES, instance=torneo)
         if form.is_valid():
             form.save()
             messages.success(request, "Torneo actualizado correctamente")
