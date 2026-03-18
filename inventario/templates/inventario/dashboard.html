@@ -1,185 +1,159 @@
 {% extends 'base/base.html' %}
+{% load humanize %}
 
 {% block contenido %}
 
 <h2 class="mb-4">Panel de Administración</h2>
 
 <div class="row">
+    <div class="col-md-3">
+        <div class="card text-white bg-success mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Ventas Totales</h5>
+                <h3>$ {{ total_ventas|floatformat:0|intcomma }}</h3>
+            </div>
+        </div>
+    </div>
 
-<div class="col-md-3">
-<div class="card text-white bg-success mb-3">
-<div class="card-body">
-<h5 class="card-title">Ventas Totales</h5>
-<h3>${{ total_ventas }}</h3>
-</div>
-</div>
-</div>
+    <div class="col-md-3">
+        <div class="card text-white bg-primary mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Cantidad Ventas</h5>
+                <h3>{{ cantidad_ventas|intcomma }}</h3>
+            </div>
+        </div>
+    </div>
 
-<div class="col-md-3">
-<div class="card text-white bg-primary mb-3">
-<div class="card-body">
-<h5 class="card-title">Cantidad Ventas</h5>
-<h3>{{ cantidad_ventas }}</h3>
-</div>
-</div>
-</div>
+    <div class="col-md-3">
+        <div class="card text-dark bg-warning mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Productos</h5>
+                <h3>{{ productos|intcomma }}</h3>
+            </div>
+        </div>
+    </div>
 
-<div class="col-md-3">
-<div class="card text-dark bg-warning mb-3">
-<div class="card-body">
-<h5 class="card-title">Productos</h5>
-<h3>{{ productos }}</h3>
-</div>
-</div>
-</div>
-
-<div class="col-md-3">
-<div class="card text-white bg-danger mb-3">
-<div class="card-body">
-<h5 class="card-title">Torneos</h5>
-<h3>{{ torneos }}</h3>
-</div>
-</div>
-</div>
-
+    <div class="col-md-3">
+        <div class="card text-white bg-danger mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Torneos</h5>
+                <h3>{{ torneos|intcomma }}</h3>
+            </div>
+        </div>
+    </div>
 </div>
 
 <hr>
 
 <h4 class="mt-4">Accesos rápidos</h4>
-
 <div class="row mt-3">
-
-<div class="col-md-3">
-<a href="/venta/" class="btn btn-success w-100">
-Registrar Venta
-</a>
+    <div class="col-md-3"><a href="/venta/" class="btn btn-success w-100">Registrar Venta</a></div>
+    <div class="col-md-3"><a href="/admin/inventario/producto/" class="btn btn-primary w-100">Administrar Productos</a></div>
+    <div class="col-md-3"><a href="/admin/torneos/torneo/" class="btn btn-warning w-100">Administrar Torneos</a></div>
+    <div class="col-md-3"><a href="/admin/" class="btn btn-dark w-100">Panel Django</a></div>
 </div>
 
-<div class="col-md-3">
-<a href="/admin/inventario/producto/" class="btn btn-primary w-100">
-Administrar Productos
-</a>
-</div>
-
-<div class="col-md-3">
-<a href="/admin/torneos/torneo/" class="btn btn-warning w-100">
-Administrar Torneos
-</a>
-</div>
-
-<div class="col-md-3">
-<a href="/admin/" class="btn btn-dark w-100">
-Panel Django
-</a>
-</div>
-
-</div>
 <hr>
-
 <h4>Ventas por día</h4>
-
 <canvas id="graficoVentas"></canvas>
 
 <hr>
-<hr>
-
 <h4>Ventas por torneo</h4>
-
 <canvas id="graficoTorneos"></canvas>
 
+<hr>
 <h4>Productos más vendidos</h4>
-
 <table class="table table-striped">
-
-<tr>
-<th>Producto</th>
-<th>Cantidad vendida</th>
-</tr>
-
-{% for p in productos_mas_vendidos %}
-
-<tr>
-<td>{{ p.producto__nombre }}</td>
-<td>{{ p.total_vendido }}</td>
-</tr>
-
-{% endfor %}
-
+    <tr>
+        <th>Producto</th>
+        <th>Cantidad vendida</th>
+    </tr>
+    {% for p in productos_mas_vendidos %}
+    <tr>
+        <td>{{ p.producto__nombre }}</td>
+        <td>{{ p.total_vendido }}</td>
+    </tr>
+    {% endfor %}
 </table>
 
 <hr>
-
 <h4>Inventario bajo</h4>
-
 <table class="table table-danger">
-
-<tr>
-<th>Producto</th>
-<th>Stock</th>
-</tr>
-
-{% for producto in inventario_bajo %}
-
-<tr>
-<td>{{ producto.nombre }}</td>
-<td>{{ producto.stock }}</td>
-</tr>
-
-{% empty %}
-
-<tr>
-<td colspan="2">Inventario correcto</td>
-</tr>
-
-{% endfor %}
-
+    <tr>
+        <th>Producto</th>
+        <th>Stock</th>
+    </tr>
+    {% for producto in inventario_bajo %}
+    <tr>
+        <td>{{ producto.nombre }}</td>
+        <td>{{ producto.stock }}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="2">Inventario correcto</td></tr>
+    {% endfor %}
 </table>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
+    let ventas = {{ ventas_por_dia|safe }};
+    let labels = ventas.map(v => v.dia);
+    let datos = ventas.map(v => v.total);
 
-let ventas = {{ ventas_por_dia|safe }}
+    new Chart(document.getElementById("graficoVentas"), {
+        type: "bar",
+        data: {
+            labels: labels,
+            datasets: [{
+                label: "Ventas",
+                data: datos,
+                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                borderColor: 'rgb(54, 162, 235)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return '$' + value.toLocaleString('es-CO');
+                        }
+                    }
+                }
+            }
+        }
+    });
 
-let labels = ventas.map(v => v.dia)
-let datos = ventas.map(v => v.total)
+    let torneos = {{ ventas_por_torneo|safe }};
+    let labelsTorneos = torneos.map(t => t.torneo);
+    let datosTorneos = torneos.map(t => t.total);
 
-new Chart(document.getElementById("graficoVentas"), {
-
-type: "bar",
-
-data: {
-labels: labels,
-datasets: [{
-label: "Ventas",
-data: datos
-}]
-}
-
-})
-
-</script>
-<script>
-
-let torneos = {{ ventas_por_torneo|safe }}
-
-let labelsTorneos = torneos.map(t => t.torneo)
-let datosTorneos = torneos.map(t => t.total)
-
-new Chart(document.getElementById("graficoTorneos"), {
-
-type: "bar",
-
-data: {
-labels: labelsTorneos,
-datasets: [{
-label: "Ventas por torneo",
-data: datosTorneos
-}]
-}
-
-})
-
+    new Chart(document.getElementById("graficoTorneos"), {
+        type: "bar",
+        data: {
+            labels: labelsTorneos,
+            datasets: [{
+                label: "Ventas por torneo",
+                data: datosTorneos,
+                backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                borderColor: 'rgb(255, 99, 132)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return '$' + value.toLocaleString('es-CO');
+                        }
+                    }
+                }
+            }
+        }
+    });
 </script>
 {% endblock %}

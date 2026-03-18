@@ -1,5 +1,5 @@
 {% extends 'base/base.html' %}
-
+{% load humanize %}
 {% block contenido %}
 
 <h2 class="mb-4">Registrar Venta</h2>
@@ -47,7 +47,7 @@
 
 <td>{{ producto.nombre }}</td>
 
-<td>${{ producto.precio }}</td>
+<td>$ {{ producto.precio|floatformat:0|intcomma }}</td>
 
 <td>{{ producto.stock }}</td>
 

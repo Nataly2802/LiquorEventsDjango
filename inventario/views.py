@@ -51,31 +51,26 @@ def crear_venta(request):
         total = 0
 
         for producto in productos:
-
             cantidad = request.POST.get(f"cantidad_{producto.id}")
-
             if cantidad:
-
                 cantidad = int(cantidad)
-
                 if cantidad > 0 and producto.stock >= cantidad:
-
-                    subtotal = producto.precio * cantidad
+                    precio_limpio = int(producto.precio)
+                    subtotal = precio_limpio * cantidad
 
                     DetalleVenta.objects.create(
                         venta=venta,
                         producto=producto,
                         cantidad=cantidad,
-                        precio=producto.precio,
+                        precio=precio_limpio,
                         subtotal=subtotal
                     )
 
                     producto.stock -= cantidad
                     producto.save()
-
                     total += subtotal
 
-        venta.total = total
+        venta.total = int(total)
         venta.save()
 
         return redirect("/venta/")
@@ -115,25 +110,18 @@ def dashboard(request):
     ventas_por_torneo = []
 
     for torneo in Torneo.objects.all():
+        total = Venta.objects.filter(torneo=torneo).aggregate(total=Sum("total"))["total"] or 0
+        ventas_por_torneo.append({
+            "torneo": torneo.nombre,
+            "total": int(total) 
+        })
 
-        total = Venta.objects.filter(
-        torneo=torneo
-    ).aggregate(total=Sum("total"))["total"] or 0
-
-    ventas_por_torneo.append({
-        "torneo": torneo.nombre,
-        "total": float(total)
-    })
-
-    total_normal = Venta.objects.filter(
-        torneo__isnull=True
-    ).aggregate(total=Sum("total"))["total"] or 0
-
+    total_normal = Venta.objects.filter(torneo__isnull=True).aggregate(total=Sum("total"))["total"] or 0
     ventas_por_torneo.append({
         "torneo": "Venta normal",
-        "total": float(total_normal)
-})
-        
+        "total": int(total_normal)
+    })
+
     productos_mas_vendidos = (
     DetalleVenta.objects
     .values("producto__nombre")
