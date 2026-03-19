@@ -1,0 +1,19 @@
+<h2>Compras</h2>
+
+<table border="1">
+<tr>
+    <th>Producto</th>
+    <th>Cantidad</th>
+    <th>Proveedor</th>
+    <th>Fecha</th>
+</tr>
+
+{% for c in compras %}
+<tr>
+    <td>{{ c.producto.nombre }}</td>
+    <td>{{ c.cantidad }}</td>
+    <td>{{ c.proveedor }}</td>
+    <td>{{ c.fecha }}</td>
+</tr>
+{% endfor %}
+</table>

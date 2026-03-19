@@ -27,9 +27,10 @@ def lista_torneos(request):
     
 @login_required
 def inscribirse(request, torneo_id):
-
     torneo = get_object_or_404(Torneo, id=torneo_id)
-
+    if torneo.estado_reserva == 'Cerradas':
+        messages.error(request, "Las inscripciones están cerradas para este torneo")
+        return redirect('lista_torneos')
     total_inscritos = torneo.inscripcion_set.count()
 
     if total_inscritos >= torneo.cupo_maximo:
@@ -49,7 +50,9 @@ def inscribirse(request, torneo_id):
         participante=request.user,
         torneo=torneo
     )
-
+    if torneo.inscripcion_set.count() >= torneo.cupo_maximo:
+        torneo.estado_reserva = 'Cerradas'
+    torneo.save()
     messages.success(request, "Te has inscrito correctamente")
 
     return redirect('lista_torneos')

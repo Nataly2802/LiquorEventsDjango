@@ -15,12 +15,10 @@
     <div class="col-md-4">
         <div class="card mb-4 shadow">
             
-            <!-- BLOQUE DE IMAGEN: Solo se muestra si NO está logueado -->
             {% if not request.user.is_authenticated %}
                 {% if torneo.imagen %}
                     <img src="{{ torneo.imagen.url }}" class="card-img-top" alt="{{ torneo.nombre }}" style="height: 200px; object-fit: cover;">
                 {% else %}
-                    <!-- Imagen opcional por defecto si el torneo no tiene foto -->
                     <div class="bg-light text-center py-5 border-bottom">
                         <small class="text-muted">Sin imagen disponible</small>
                     </div>
@@ -32,9 +30,10 @@
                 <p class="card-text">{{ torneo.descripcion }}</p>
                 
                 <p><strong>Fecha:</strong> {{ torneo.fecha }}</p>
-                <p>Cupos máximos: {{ torneo.cupo_maximo }}</p>
-                <p>Inscritos: {{ torneo.total_inscritos }}</p>
-                <p>Cupos disponibles: {{ torneo.cupos_disponibles }}</p> 
+                <p><strong>Hora:</strong> {{ torneo.hora }}</p>
+                <p><strong>Cupos máximos:</strong> {{ torneo.cupo_maximo }}</p>
+                <p><strong>Inscritos:</strong> {{ torneo.total_inscritos }}</p>
+                <p><strong>Cupos disponibles:</strong> {{ torneo.cupos_disponibles }}</p> 
 
                 {% if torneo.id in inscritos %}
                     <p class="text-success">Ya estás inscrito</p>

@@ -1,0 +1,22 @@
+<h2>Registrar Compra</h2>
+
+<form method="post">
+    {% csrf_token %}
+
+    <label>Producto:</label>
+    <select name="producto">
+        {% for p in productos %}
+            <option value="{{ p.id }}">{{ p.nombre }}</option>
+        {% endfor %}
+    </select>
+
+    <label>Cantidad:</label>
+    <input type="number" name="cantidad" required>
+
+    <label>Proveedor:</label>
+    <input type="text" name="proveedor" required>
+
+    <button type="submit">Registrar</button>
+</form>
+
+<a href="{% url 'lista_productos' %}">Volver</a>

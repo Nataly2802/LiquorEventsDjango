@@ -1,7 +1,7 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.decorators import login_required
-from .forms import VentaForm
-from .models import Venta, DetalleVenta, Producto
+from .forms import ProductoForm, VentaForm
+from .models import Venta, DetalleVenta, Producto, MovimientoInventario, Compra
 from django.utils import timezone
 from torneos.models import Torneo
 from django.http import HttpResponse
@@ -47,7 +47,12 @@ def crear_venta(request):
     if request.method == "POST":
 
         torneo_id = request.POST.get("torneo")
-        pago = float(request.POST.get("pago") or 0)
+        
+        try:
+            pago = float(request.POST.get("pago") or 0)
+        except:
+            messages.error(request, "Ingrese un valor válido de pago")
+            return redirect("/venta/")
 
         torneo = None
         if torneo_id:
@@ -77,7 +82,7 @@ def crear_venta(request):
 
         if total == 0:
             messages.error(request, "Debe seleccionar al menos un producto")
-            return redirect(f"/ticket/{venta.id}/")
+            return redirect("/venta/")
 
         if pago < total:
             messages.error(request, "El pago es insuficiente")
@@ -94,6 +99,7 @@ def crear_venta(request):
         )
 
         for d in detalles:
+
             DetalleVenta.objects.create(
                 venta=venta,
                 producto=d["producto"],
@@ -106,6 +112,13 @@ def crear_venta(request):
             producto.stock -= d["cantidad"]
             producto.save()
 
+            MovimientoInventario.objects.create(
+                producto=producto,
+                tipo='Salida',
+                cantidad=d["cantidad"],
+                motivo=f"Venta #{venta.id}"
+            )
+
         messages.success(request, f"Venta registrada correctamente. Cambio: ${cambio}")
 
         return redirect("/venta/")
@@ -114,7 +127,6 @@ def crear_venta(request):
         "productos": productos,
         "torneos": torneos
     })
-    
 @login_required
 @solo_empleados
 def dashboard(request):
@@ -483,3 +495,86 @@ def reporte_pdf(request):
     doc.build(elements)
 
     return response
+
+@login_required
+def lista_productos(request):
+    productos = Producto.objects.all()
+    return render(request, 'inventario/productos.html', {
+        'productos': productos
+    })
+    
+@login_required
+def crear_producto(request):
+    if request.method == 'POST':
+        form = ProductoForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Producto creado correctamente")
+            return redirect('lista_productos')
+    else:
+        form = ProductoForm()
+
+    return render(request, 'inventario/form_producto.html', {'form': form})
+
+@login_required
+def editar_producto(request, id):
+    producto = get_object_or_404(Producto, id=id)
+
+    if request.method == 'POST':
+        form = ProductoForm(request.POST, instance=producto)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Producto actualizado")
+            return redirect('lista_productos')
+    else:
+        form = ProductoForm(instance=producto)
+
+    return render(request, 'inventario/form_producto.html', {'form': form})
+
+@login_required
+def eliminar_producto(request, id):
+    producto = get_object_or_404(Producto, id=id)
+    producto.delete()
+    messages.success(request, "Producto eliminado")
+    return redirect('lista_productos')
+
+@login_required
+def registrar_compra(request):
+    productos = Producto.objects.all()
+
+    if request.method == 'POST':
+        producto_id = request.POST.get('producto')
+        cantidad = int(request.POST.get('cantidad'))
+        proveedor = request.POST.get('proveedor')
+
+        producto = Producto.objects.get(id=producto_id)
+
+        producto.stock += cantidad
+        producto.save()
+
+        Compra.objects.create(
+            producto=producto,
+            cantidad=cantidad,
+            proveedor=proveedor
+        )
+
+        MovimientoInventario.objects.create(
+            producto=producto,
+            tipo='Entrada',
+            cantidad=cantidad,
+            motivo=f"Compra proveedor {proveedor}"
+        )
+
+        messages.success(request, "Compra registrada correctamente")
+        return redirect('lista_productos')
+
+    return render(request, 'inventario/compra.html', {
+        'productos': productos
+    })
+    
+@login_required
+def lista_compras(request):
+    compras = Compra.objects.all().order_by('-fecha')
+    return render(request, 'inventario/lista_compras.html', {
+        'compras': compras
+    })

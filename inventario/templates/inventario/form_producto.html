@@ -1,0 +1,10 @@
+<h2>Formulario Producto</h2>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <button type="submit">Guardar</button>
+</form>
+
+<a href="{% url 'lista_productos' %}">Volver</a>

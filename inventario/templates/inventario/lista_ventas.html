@@ -1,5 +1,5 @@
 {% extends 'base/base.html' %}
-
+{% load humanize %}
 {% block contenido %}
 
 <h2>Listado de Ventas</h2>
@@ -78,7 +78,7 @@
 Venta normal
 {% endif %}
 </td>
-<td>$ {{ venta.total }}</td>
+<td>$ {{ venta.total|floatformat:0|intcomma }}</td>
 <td>{{ venta.fecha }}</td>
 
 <td>

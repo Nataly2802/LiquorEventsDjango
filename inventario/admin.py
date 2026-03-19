@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Producto, Venta, DetalleVenta
+from .models import Producto, Venta, DetalleVenta, MovimientoInventario, Compra
+
 
 # Register your models here.
 
@@ -17,3 +18,5 @@ class VentaAdmin(admin.ModelAdmin):
 admin.site.register(Producto)
 admin.site.register(DetalleVenta)
 admin.site.register(Venta, VentaAdmin)
+admin.site.register(MovimientoInventario)
+admin.site.register(Compra)
