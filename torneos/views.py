@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from .models import Torneo, Inscripcion
-from .forms import TorneoForm
+from .forms import InscripcionForm, TorneoForm
 from django.contrib import messages
 from django.http import HttpResponseForbidden
 
@@ -27,13 +27,18 @@ def lista_torneos(request):
     
 @login_required
 def inscribirse(request, torneo_id):
+
     torneo = get_object_or_404(Torneo, id=torneo_id)
-    if torneo.estado_reserva == 'Cerradas':
-        messages.error(request, "Las inscripciones están cerradas para este torneo")
+
+    if torneo.estado_reserva == "Cerradas":
+        messages.error(request, "Las inscripciones están cerradas")
         return redirect('lista_torneos')
+
     total_inscritos = torneo.inscripcion_set.count()
 
     if total_inscritos >= torneo.cupo_maximo:
+        torneo.estado_reserva = "Cerradas"
+        torneo.save()
         messages.error(request, "El torneo ya está lleno")
         return redirect('lista_torneos')
 
@@ -46,16 +51,29 @@ def inscribirse(request, torneo_id):
         messages.warning(request, "Ya estás inscrito en este torneo")
         return redirect('lista_torneos')
 
-    Inscripcion.objects.create(
-        participante=request.user,
-        torneo=torneo
-    )
-    if torneo.inscripcion_set.count() >= torneo.cupo_maximo:
-        torneo.estado_reserva = 'Cerradas'
-    torneo.save()
-    messages.success(request, "Te has inscrito correctamente")
+    if request.method == "POST":
+        form = InscripcionForm(request.POST)
 
-    return redirect('lista_torneos')
+        if form.is_valid():
+            inscripcion = form.save(commit=False)
+            inscripcion.participante = request.user
+            inscripcion.torneo = torneo
+            inscripcion.save()
+
+            total_inscritos = torneo.inscripcion_set.count()
+            if total_inscritos >= torneo.cupo_maximo:
+                torneo.estado_reserva = "Cerradas"
+                torneo.save()
+
+            messages.success(request, "Equipo inscrito correctamente")
+            return redirect('lista_torneos')
+    else:
+        form = InscripcionForm()
+
+    return render(request, "torneos/inscribirse.html", {
+        "form": form,
+        "torneo": torneo
+    })
 
 @login_required
 def mis_torneos(request):

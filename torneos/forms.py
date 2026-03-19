@@ -1,5 +1,5 @@
 from django import forms
-from .models import Torneo
+from .models import Torneo, Inscripcion
 
 class TorneoForm(forms.ModelForm):
     class Meta:
@@ -32,3 +32,8 @@ class TorneoForm(forms.ModelForm):
         if cupo <= 0:
             raise forms.ValidationError("El cupo debe ser mayor a 0")
         return cupo
+    
+class InscripcionForm(forms.ModelForm):
+    class Meta:
+        model = Inscripcion
+        fields = ['nombre_equipo', 'numero_personas', 'categoria']

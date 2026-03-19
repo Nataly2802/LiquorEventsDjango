@@ -1,0 +1,16 @@
+<h2>Inscribirse en {{ torneo.nombre }}</h2>
+
+<form method="post">
+    {% csrf_token %}
+
+    <label>Nombre del equipo:</label>
+    {{ form.nombre_equipo }}
+
+    <label>Número de personas:</label>
+    {{ form.numero_personas }}
+
+    <label>Categoría:</label>
+    {{ form.categoria }}
+
+    <button type="submit">Inscribirse</button>
+</form>
