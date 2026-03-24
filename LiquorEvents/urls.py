@@ -25,6 +25,7 @@ urlpatterns = [
     path('', include('usuarios.urls')),
     path('', include('inventario.urls')),
     path('', include('torneos.urls')),
+    path('', include('contacto.urls')),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
