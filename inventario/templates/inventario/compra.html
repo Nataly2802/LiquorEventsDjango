@@ -1,3 +1,5 @@
+{% extends 'base/base.html' %}
+{% block contenido %}
 <h2>Registrar Compra</h2>
 
 <form method="post">
@@ -20,3 +22,4 @@
 </form>
 
 <a href="{% url 'lista_productos' %}">Volver</a>
+{% endblock %}

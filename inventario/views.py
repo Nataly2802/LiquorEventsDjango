@@ -578,3 +578,11 @@ def lista_compras(request):
     return render(request, 'inventario/lista_compras.html', {
         'compras': compras
     })
+    
+@login_required
+def movimientos_inventario(request):
+    movimientos = MovimientoInventario.objects.all().order_by('-fecha')
+
+    return render(request, 'inventario/movimientos.html', {
+        'movimientos': movimientos
+    })
