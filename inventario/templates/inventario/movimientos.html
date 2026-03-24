@@ -2,7 +2,18 @@
 {% block contenido %}
 
 <h2 class="mb-4">Movimientos de Inventario</h2>
+<form method="get" class="mb-3">
+    <label>Desde:</label>
+    <input type="date" name="inicio">
 
+    <label>Hasta:</label>
+    <input type="date" name="fin">
+
+    <button type="submit" class="btn btn-primary">Filtrar</button>
+</form>
+
+<a href="{% url 'reporte_movimientos_pdf' %}?inicio={{ request.GET.inicio|default:'' }}&fin={{ request.GET.fin|default:'' }}" class="btn btn-danger mb-3">
+Descargar PDF</a>
 <table class="table table-bordered table-striped">
     <thead class="table-dark">
         <tr>

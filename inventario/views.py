@@ -581,8 +581,79 @@ def lista_compras(request):
     
 @login_required
 def movimientos_inventario(request):
+
     movimientos = MovimientoInventario.objects.all().order_by('-fecha')
+
+    inicio = request.GET.get('inicio')
+    fin = request.GET.get('fin')
+
+    if inicio:
+        movimientos = movimientos.filter(fecha__date__gte=inicio)
+
+    if fin:
+        movimientos = movimientos.filter(fecha__date__lte=fin)
 
     return render(request, 'inventario/movimientos.html', {
         'movimientos': movimientos
     })
+    
+@login_required
+def reporte_movimientos_pdf(request):
+
+    movimientos = MovimientoInventario.objects.all().order_by('-fecha')
+
+    fecha_inicio = request.GET.get('inicio')
+    fecha_fin = request.GET.get('fin')
+
+    if fecha_inicio:
+        movimientos = movimientos.filter(fecha__date__gte=fecha_inicio)
+
+    if fecha_fin:
+        movimientos = movimientos.filter(fecha__date__lte=fecha_fin)
+
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename=reporte_movimientos.pdf'
+
+    doc = SimpleDocTemplate(response, pagesize=letter)
+    elements = []
+    styles = getSampleStyleSheet()
+
+    elements.append(Paragraph("REPORTE DE INVENTARIO", styles['Title']))
+    elements.append(Spacer(1, 10))
+
+    data = [["Producto", "Tipo", "Cantidad", "Motivo", "Fecha"]]
+
+    entradas = 0
+    salidas = 0
+
+    for m in movimientos:
+        data.append([
+            m.producto.nombre,
+            m.tipo,
+            m.cantidad,
+            m.motivo,
+            str(m.fecha)
+        ])
+
+        if m.tipo == "Entrada":
+            entradas += m.cantidad
+        else:
+            salidas += m.cantidad
+
+    table = Table(data)
+
+    table.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,0), colors.black),
+        ('TEXTCOLOR', (0,0), (-1,0), colors.white),
+        ('GRID', (0,0), (-1,-1), 1, colors.grey),
+    ]))
+
+    elements.append(table)
+    elements.append(Spacer(1, 15))
+
+    elements.append(Paragraph(f"Total Entradas: {entradas}", styles['Normal']))
+    elements.append(Paragraph(f"Total Salidas: {salidas}", styles['Normal']))
+
+    doc.build(elements)
+
+    return response
