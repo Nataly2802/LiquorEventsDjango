@@ -524,10 +524,9 @@ def lista_productos(request):
         'productos': productos
     })
     
-@login_required
 def crear_producto(request):
     if request.method == 'POST':
-        form = ProductoForm(request.POST)
+        form = ProductoForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
             messages.success(request, "Producto creado correctamente")
@@ -542,7 +541,7 @@ def editar_producto(request, id):
     producto = get_object_or_404(Producto, id=id)
 
     if request.method == 'POST':
-        form = ProductoForm(request.POST, instance=producto)
+        form = ProductoForm(request.POST, request.FILES, instance=producto)
         if form.is_valid():
             form.save()
             messages.success(request, "Producto actualizado")

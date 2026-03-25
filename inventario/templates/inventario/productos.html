@@ -47,63 +47,78 @@
     </div>
 
 </form>
-    <table class="table table-hover table-bordered text-center align-middle">
-        <thead class="table-dark">
-            <tr>
-                <th>Código</th>
-                <th>Nombre</th>
-                <th>Marca</th>
-                <th>Categoría</th>
-                <th>Precio</th>
-                <th>Stock</th>
-                <th>Imagen</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
+<div class="row">
 
-        <tbody>
-            {% for p in productos %}
-            <tr>
-                <td>{{ p.codigo }}</td>
-                <td>{{ p.nombre }}</td>
-                <td>{{ p.marca }}</td>
-                <td>{{ p.categoria }}</td>
+{% for p in productos %}
+<div class="col-md-4 mb-4">
 
-                <td>$ {{ p.precio|floatformat:0|intcomma}}</td>
+    <div class="card h-100 shadow producto-card">
 
-                <td>
-                    {% if p.stock == 0 %}
-                        <span class="badge bg-danger">Sin stock</span>
-                    {% elif p.stock <= 5 %}
-                        <span class="badge bg-warning text-dark">{{ p.stock }}</span>
-                    {% else %}
-                        <span class="badge bg-success">{{ p.stock }}</span>
-                    {% endif %}
-                </td>
+        <div class="text-center mb-3">
+            {% if p.imagen %}
+                <img src="{{ p.imagen.url }}" class="img-producto">
+            {% else %}
+                <span class="text-muted">Sin imagen</span>
+            {% endif %}
+        </div>
 
-                <td>
-                {% if p.imagen %}
-                    <img src="{{ p.imagen.url }}" width="60" height="60" style="object-fit: cover;">
+        <div class="card-body">
+
+            <h5 class="card-title text-center">{{ p.nombre }}</h5>
+
+            <hr>
+            <p>
+                {% if p.descripcion %}
+                    {{ p.descripcion|truncatewords:15 }}
                 {% else %}
-                    <span class="text-muted">Sin imagen</span>
+                    <span class="text-muted">Sin descripción</span>
                 {% endif %}
-                </td>
+            </p>
+            <p><strong>Código:</strong> {{ p.codigo }}</p>
+            <p><strong>Marca:</strong> {{ p.marca }}</p>
+            <p><strong>Categoría:</strong> {{ p.categoria }}</p>
 
-                <td>
-                    <a href="{% url 'editar_producto' p.id %}" class="btn btn-sm btn-warning">
-                        Editar
-                    </a>
+            <p>
+                <strong>Precio:</strong> 
+                <span class="text-success">
+                    $ {{ p.precio|floatformat:0|intcomma }}
+                </span>
+            </p>
 
-                    <a href="{% url 'eliminar_producto' p.id %}" 
-                       class="btn btn-sm btn-danger"
-                       onclick="return confirm('¿Eliminar este producto?')">
-                        Eliminar
-                    </a>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            <p>
+                <strong>Stock:</strong>
+                {% if p.stock == 0 %}
+                    <span class="badge bg-danger">Sin stock</span>
+                {% elif p.stock <= 5 %}
+                    <span class="badge bg-warning text-dark">{{ p.stock }}</span>
+                {% else %}
+                    <span class="badge bg-success">{{ p.stock }}</span>
+                {% endif %}
+            </p>
+
+        </div>
+
+        <div class="card-footer text-center bg-white">
+
+            <a href="{% url 'editar_producto' p.id %}" 
+               class="btn btn-warning btn-sm">
+               Editar
+            </a>
+
+            <a href="{% url 'eliminar_producto' p.id %}" 
+               class="btn btn-danger btn-sm"
+               onclick="return confirm('¿Eliminar este producto?')">
+               Eliminar
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+{% endfor %}
+
+</div>
     <nav>
     <ul class="pagination justify-content-center">
 
@@ -137,3 +152,20 @@
 </div>
 
 {% endblock %}
+<script>
+const buscador = document.querySelector("input[name='buscar']");
+
+buscador.addEventListener("keyup", function() {
+    let filtro = buscador.value.toLowerCase();
+
+    document.querySelectorAll(".producto-card").forEach(card => {
+        let nombre = card.innerText.toLowerCase();
+
+        if (nombre.includes(filtro)) {
+            card.parentElement.style.display = "block";
+        } else {
+            card.parentElement.style.display = "none";
+        }
+    });
+});
+</script>

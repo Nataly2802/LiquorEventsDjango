@@ -1,5 +1,5 @@
 {% extends 'base/base.html' %}
-
+{% load humanize %}
 {% block contenido %}
 
 <h2>Detalle de Venta #{{ venta.id }}</h2>
@@ -35,8 +35,8 @@ Venta normal
 <tr>
 <td>{{ d.producto.nombre }}</td>
 <td>{{ d.cantidad }}</td>
-<td>$ {{ d.precio }}</td>
-<td>$ {{ d.subtotal }}</td>
+<td>$ {{ d.precio|floatformat:0|intcomma }}</td>
+<td>$ {{ d.subtotal|floatformat:0|intcomma }}</td>
 </tr>
 {% endfor %}
 
@@ -46,9 +46,9 @@ Venta normal
 
 <hr>
 
-<h4>Total: $ {{ venta.total }}</h4>
-<h5>Pago: $ {{ venta.pago }}</h5>
-<h5>Cambio: $ {{ venta.cambio }}</h5>
+<h4>Total: $ {{ venta.total|floatformat:0|intcomma }}</h4>
+<h5>Pago: $ {{ venta.pago|floatformat:0|intcomma }}</h5>
+<h5>Cambio: $ {{ venta.cambio|floatformat:0|intcomma }}</h5>
 
 <a href="/ventas/" class="btn btn-secondary">Volver</a>
 

@@ -1,65 +1,90 @@
 {% extends 'base/base.html' %}
 {% block contenido %}
 
-<div class="container mt-4">
-
-    <h2 class="mb-4">Formulario Producto</h2>
-
-    <div class="card p-4 shadow">
-
-        <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-
-            <div class="row">
-
-                <div class="col-md-6 mb-3">
-                    <label>Código</label>
-                    {{ form.codigo }}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow-lg border-0 rounded-lg">
+                <div class="card-header bg-primary text-white text-center py-3">
+                    <h3 class="mb-0">Formulario Producto</h3>
                 </div>
+                <div class="card-body p-5">
+                    <form method="post" enctype="multipart/form-data" novalidate>
+                        {% csrf_token %}
+                        
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Código</label>
+                                {{ form.codigo }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Nombre del Producto</label>
+                                {{ form.nombre }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Marca</label>
+                                {{ form.marca }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Categoría</label>
+                                {{ form.categoria }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Precio ($)</label>
+                                {{ form.precio }}
+                                {% if form.precio.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {{ form.precio.errors|first }}
+                                    </div>
+                                {% endif %}
+                                <div id="precio-formateado" class="small text-muted mt-1"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Stock Disponible</label>
+                                {{ form.stock }}
+                                {% if form.stock.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {{ form.stock.errors|first }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label fw-bold">Imagen del Producto</label>
+                                {{ form.imagen }}
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label fw-bold">Descripción</label>
+                                {{ form.descripcion }}
+                            </div>
+                        </div>
 
-                <div class="col-md-6 mb-3">
-                    <label>Nombre</label>
-                    {{ form.nombre }}
+                        <div class="mt-4 d-flex gap-2">
+                            <button type="submit" class="btn btn-success px-4 shadow-sm">
+                                <i class="fas fa-save"></i> Guardar Producto
+                            </button>
+                            <a href="{% url 'lista_productos' %}" class="btn btn-outline-secondary px-4">
+                                Volver
+                            </a>
+                        </div>
+                    </form>
                 </div>
-
-                <div class="col-md-6 mb-3">
-                    <label>Marca</label>
-                    {{ form.marca }}
-                </div>
-
-                <div class="col-md-6 mb-3">
-                    <label>Categoría</label>
-                    {{ form.categoria }}
-                </div>
-
-                <div class="col-md-6 mb-3">
-                    <label>Precio</label>
-                    {{ form.precio }}
-                </div>
-
-                <div class="col-md-6 mb-3">
-                    <label>Stock</label>
-                    {{ form.stock }}
-                </div>
-
-                <div class="col-md-12 mb-3">
-                    <label>Imagen</label>
-                    {{ form.imagen }}
-                </div>
-
-                <div class="col-md-12 mb-3">
-                    <label>Descripción</label>
-                    {{ form.descripcion }}
-                </div>
-
             </div>
-
-            <button type="submit" class="btn btn-success">Guardar</button>
-            <a href="{% url 'lista_productos' %}" class="btn btn-secondary">Volver</a>
-
-        </form>
-
+        </div>
     </div>
 </div>
+
+<script>
+    const inputPrecio = document.querySelector('input[name="precio"]');
+    const visualPrecio = document.getElementById('precio-formateado');
+
+    inputPrecio.addEventListener('input', (e) => {
+        const value = e.target.value;
+        if (value) {
+            visualPrecio.textContent = 'Formato: $' + Number(value).toLocaleString('es-CO');
+        } else {
+            visualPrecio.textContent = '';
+        }
+    });
+</script>
 
 {% endblock %}
