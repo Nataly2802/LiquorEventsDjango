@@ -1,5 +1,6 @@
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.decorators import login_required
+from requests import request
 from .forms import ProductoForm, VentaForm
 from .models import Venta, DetalleVenta, Producto, MovimientoInventario, Compra
 from django.utils import timezone
@@ -21,6 +22,8 @@ from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet
 import os
 from django.conf import settings
+from django.core.paginator import Paginator
+
 # Create your views here.
 def solo_empleados(view_func):
     
@@ -496,9 +499,27 @@ def reporte_pdf(request):
 
     return response
 
+from django.core.paginator import Paginator
+
 @login_required
 def lista_productos(request):
+
     productos = Producto.objects.all()
+
+    buscar = request.GET.get('buscar')
+    categoria = request.GET.get('categoria')
+
+    if buscar:
+        productos = productos.filter(nombre__icontains=buscar)
+
+    if categoria:
+        productos = productos.filter(categoria__icontains=categoria)
+
+    paginator = Paginator(productos, 5)
+    page = request.GET.get('page')
+
+    productos = paginator.get_page(page)
+
     return render(request, 'inventario/productos.html', {
         'productos': productos
     })
