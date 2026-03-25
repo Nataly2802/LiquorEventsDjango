@@ -2,7 +2,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.decorators import login_required
 from requests import request
 from .forms import ProductoForm, VentaForm
-from .models import Venta, DetalleVenta, Producto, MovimientoInventario, Compra
+from .models import Venta, DetalleVenta, Producto, MovimientoInventario, Compra, Categoria
 from django.utils import timezone
 from torneos.models import Torneo
 from django.http import HttpResponse
@@ -677,3 +677,48 @@ def reporte_movimientos_pdf(request):
     doc.build(elements)
 
     return response
+@login_required
+def crear_categoria(request):
+
+    if request.method == 'POST':
+        nombre = request.POST.get('nombre')
+
+        if nombre:
+            Categoria.objects.create(nombre=nombre)
+            messages.success(request, "Categoría creada correctamente")
+            return redirect('lista_categorias')
+
+    return render(request, 'inventario/form_categoria.html')
+@login_required
+def lista_categorias(request):
+    categorias = Categoria.objects.all()
+
+    return render(request, 'inventario/categorias.html', {
+        'categorias': categorias
+    })
+@login_required
+def editar_categoria(request, id):
+    categoria = get_object_or_404(Categoria, id=id)
+
+    if request.method == 'POST':
+        categoria.nombre = request.POST.get('nombre')
+        categoria.save()
+
+        messages.success(request, "Categoría actualizada")
+        return redirect('lista_categorias')
+
+    return render(request, 'inventario/form_categoria.html', {
+        'categoria': categoria
+    })
+@login_required
+def eliminar_categoria(request, id):
+    categoria = get_object_or_404(Categoria, id=id)
+
+    if Producto.objects.filter(categoria=categoria).exists():
+        messages.error(request, "No puedes eliminar esta categoría porque tiene productos asociados")
+        return redirect('lista_categorias')
+
+    categoria.delete()
+    messages.success(request, "Categoría eliminada correctamente")
+
+    return redirect('lista_categorias')

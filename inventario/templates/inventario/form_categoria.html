@@ -1,0 +1,25 @@
+{% extends 'base/base.html' %}
+{% block contenido %}
+
+<div class="container mt-4">
+
+    <h2>
+        {% if categoria %}Editar{% else %}Crear{% endif %} Categoría
+    </h2>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <label>Nombre:</label>
+        <input type="text" name="nombre" class="form-control"
+               value="{{ categoria.nombre|default:'' }}" required>
+
+        <br>
+
+        <button class="btn btn-success">Guardar</button>
+        <a href="{% url 'lista_categorias' %}" class="btn btn-secondary">Volver</a>
+    </form>
+
+</div>
+
+{% endblock %}
