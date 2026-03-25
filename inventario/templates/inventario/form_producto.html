@@ -1,14 +1,65 @@
 {% extends 'base/base.html' %}
 {% block contenido %}
 
-<h2>Formulario Producto</h2>
+<div class="container mt-4">
 
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
+    <h2 class="mb-4">Formulario Producto</h2>
 
-    <button type="submit">Guardar</button>
-</form>
+    <div class="card p-4 shadow">
 
-<a href="{% url 'lista_productos' %}">Volver</a>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="row">
+
+                <div class="col-md-6 mb-3">
+                    <label>Código</label>
+                    {{ form.codigo }}
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label>Nombre</label>
+                    {{ form.nombre }}
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label>Marca</label>
+                    {{ form.marca }}
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label>Categoría</label>
+                    {{ form.categoria }}
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label>Precio</label>
+                    {{ form.precio }}
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label>Stock</label>
+                    {{ form.stock }}
+                </div>
+
+                <div class="col-md-12 mb-3">
+                    <label>Imagen</label>
+                    {{ form.imagen }}
+                </div>
+
+                <div class="col-md-12 mb-3">
+                    <label>Descripción</label>
+                    {{ form.descripcion }}
+                </div>
+
+            </div>
+
+            <button type="submit" class="btn btn-success">Guardar</button>
+            <a href="{% url 'lista_productos' %}" class="btn btn-secondary">Volver</a>
+
+        </form>
+
+    </div>
+</div>
+
 {% endblock %}

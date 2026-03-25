@@ -16,11 +16,7 @@ class Producto(models.Model):
 
     stock = models.IntegerField()
 
-    estado = models.CharField(
-        max_length=20,
-        choices=[('Activo', 'Activo'), ('Inactivo', 'Inactivo')],
-        default='Activo'
-    )
+    imagen = models.ImageField(upload_to='IMG/productos/', null=True, blank=True)
 
     descripcion = models.TextField(blank=True)
 

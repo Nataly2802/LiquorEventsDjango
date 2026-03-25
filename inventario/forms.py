@@ -4,8 +4,9 @@ from .models import Producto
 
 class VentaForm(forms.Form):
 
-    producto = forms.ModelChoiceField(
-        queryset=Producto.objects.filter(estado='Activo')
+    class VentaForm(forms.Form):
+        producto = forms.ModelChoiceField(
+        queryset=Producto.objects.all()
     )
 
     cantidad = forms.IntegerField(min_value=1)
@@ -20,6 +21,6 @@ class ProductoForm(forms.ModelForm):
             'categoria',
             'precio',
             'stock',
-            'estado',
+            'imagen',
             'descripcion'
         ]
