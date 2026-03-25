@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404, render, redirect
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from requests import request
 from .forms import ProductoForm, VentaForm
 from .models import Venta, DetalleVenta, Producto, MovimientoInventario, Compra, Categoria
@@ -196,6 +196,7 @@ def dashboard(request):
 
 
 @login_required
+@solo_empleados
 def ticket_pdf(request, venta_id):
 
     venta = Venta.objects.get(id=venta_id)
@@ -523,7 +524,9 @@ def lista_productos(request):
     return render(request, 'inventario/productos.html', {
         'productos': productos
     })
-    
+
+@login_required
+@solo_empleados
 def crear_producto(request):
     if request.method == 'POST':
         form = ProductoForm(request.POST, request.FILES)
@@ -537,6 +540,7 @@ def crear_producto(request):
     return render(request, 'inventario/form_producto.html', {'form': form})
 
 @login_required
+@solo_empleados
 def editar_producto(request, id):
     producto = get_object_or_404(Producto, id=id)
 
@@ -552,6 +556,7 @@ def editar_producto(request, id):
     return render(request, 'inventario/form_producto.html', {'form': form})
 
 @login_required
+@solo_empleados
 def eliminar_producto(request, id):
     producto = get_object_or_404(Producto, id=id)
     producto.delete()
@@ -559,6 +564,7 @@ def eliminar_producto(request, id):
     return redirect('lista_productos')
 
 @login_required
+@solo_empleados
 def registrar_compra(request):
     productos = Producto.objects.all()
 
@@ -593,6 +599,7 @@ def registrar_compra(request):
     })
     
 @login_required
+@solo_empleados
 def lista_compras(request):
     compras = Compra.objects.all().order_by('-fecha')
     return render(request, 'inventario/lista_compras.html', {
@@ -600,6 +607,7 @@ def lista_compras(request):
     })
     
 @login_required
+@solo_empleados
 def movimientos_inventario(request):
 
     movimientos = MovimientoInventario.objects.all().order_by('-fecha')
@@ -618,6 +626,7 @@ def movimientos_inventario(request):
     })
     
 @login_required
+@solo_empleados
 def reporte_movimientos_pdf(request):
 
     movimientos = MovimientoInventario.objects.all().order_by('-fecha')
@@ -677,7 +686,9 @@ def reporte_movimientos_pdf(request):
     doc.build(elements)
 
     return response
+
 @login_required
+@solo_empleados
 def crear_categoria(request):
 
     if request.method == 'POST':
@@ -690,6 +701,7 @@ def crear_categoria(request):
 
     return render(request, 'inventario/form_categoria.html')
 @login_required
+@solo_empleados
 def lista_categorias(request):
     categorias = Categoria.objects.all()
 
@@ -697,6 +709,7 @@ def lista_categorias(request):
         'categorias': categorias
     })
 @login_required
+@solo_empleados
 def editar_categoria(request, id):
     categoria = get_object_or_404(Categoria, id=id)
 
@@ -711,6 +724,7 @@ def editar_categoria(request, id):
         'categoria': categoria
     })
 @login_required
+@solo_empleados
 def eliminar_categoria(request, id):
     categoria = get_object_or_404(Categoria, id=id)
 

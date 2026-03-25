@@ -5,7 +5,7 @@
 <div class="container mt-4">
 
     <h2 class="mb-4">Lista de Productos</h2>
-
+{% if user.is_staff %}
     <div class="mb-3">
         <a href="{% url 'crear_producto' %}" class="btn btn-success">
             Crear Producto
@@ -21,6 +21,7 @@
             Ver Movimientos
         </a>
     </div>
+ {% endif %}
 <form method="get" class="row mb-4">
 
     <div class="col-md-4">
@@ -99,7 +100,7 @@
             </p>
 
         </div>
-
+{% if user.is_staff %}
         <div class="card-footer text-center bg-white">
 
             <a href="{% url 'editar_producto' p.id %}" 
@@ -114,7 +115,7 @@
             </a>
 
         </div>
-
+{% endif %}
     </div>
 
 </div>

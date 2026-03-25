@@ -26,9 +26,11 @@
                     <span class="text-white me-3">Bienvenido {{ user.username }}</span>
                     
                     <a class="btn btn-warning btn-sm me-2" href="{% url 'lista_torneos' %}">Torneos</a>
+                    <a class="btn btn-warning btn-sm me-2" href="{% url 'lista_productos' %}">Productos</a>
+
 
                 {% if user.rol == 'participante' %}
-                    <a class="btn btn-outline-light btn-sm me-2" href="{% url 'mis_torneos' %}">Mis torneos</a>
+                    <a class="btn btn-warning btn-sm me-2" href="{% url 'mis_torneos' %}">Mis torneos</a>
                 {% endif %}
 
 
