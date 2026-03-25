@@ -5,120 +5,95 @@
 <h2 class="mb-4">Registrar Venta</h2>
 
 <form method="POST">
-
 {% csrf_token %}
 
 <label>Torneo</label>
-
 <select name="torneo" class="form-control">
-
-<option value="">Venta normal</option>
-
-{% for torneo in torneos %}
-
-<option value="{{ torneo.id }}">
-{{ torneo.nombre }}
-</option>
-
-{% endfor %}
-
+    <option value="">Venta normal</option>
+    {% for torneo in torneos %}
+        <option value="{{ torneo.id }}">{{ torneo.nombre }}</option>
+    {% endfor %}
 </select>
 
-<br><br>
+<br>
 
-<table class="table table-striped">
+<input type="text" id="buscar" class="form-control mb-3" placeholder="Buscar producto...">
 
+<table class="table table-bordered">
 <thead>
-
 <tr>
-<th>Producto</th>
-<th>Precio</th>
-<th>Stock</th>
-<th>Cantidad</th>
+    <th>Producto</th>
+    <th>Precio</th>
+    <th>Stock</th>
+    <th>Cantidad</th>
 </tr>
-
 </thead>
 
-<tbody>
-
+<tbody id="tabla-productos">
 {% for producto in productos %}
-
 <tr>
-
-<td>{{ producto.nombre }}</td>
-
-<td 
-class="precio" 
-data-precio="{{ producto.precio }}"
->
-$ {{ producto.precio|floatformat:0|intcomma }}
-</td>
-
-<td>{{ producto.stock }}</td>
-
-<td>
-
-<input 
-type="number"
-name="cantidad_{{ producto.id }}"
-class="form-control cantidad"
-min="0"
-max="{{ producto.stock }}"
-value="0"
-class="form-control"
->
-
-</td>
-
+    <td>{{ producto.nombre }}</td>
+    <td class="precio" data-precio="{{ producto.precio }}">
+        ${{ producto.precio|floatformat:0|intcomma }}
+    </td>
+    <td>{{ producto.stock }}</td>
+    <td>
+        <input type="number"
+               name="cantidad_{{ producto.id }}"
+               class="form-control cantidad"
+               min="0"
+               max="{{ producto.stock }}"
+               value="0">
+    </td>
 </tr>
-
 {% endfor %}
-
 </tbody>
-
 </table>
+
 <div class="row mt-4">
+    <div class="col-md-4">
+        <label>Total</label>
+        <input type="text" id="total" class="form-control" readonly value="0">
+    </div>
 
-<div class="col-md-4">
-<label>Total</label>
-<input type="text" id="total" class="form-control" readonly value="0">
-</div>
+    <div class="col-md-4">
+        <label>Pago</label>
+        <input type="number" name="pago" id="pago" class="form-control" required>
+    </div>
 
-<div class="col-md-4">
-<label>Pago</label>
-<input type="number" name="pago" id="pago" class="form-control" required>
-</div>
-
-<div class="col-md-4">
-<label>Cambio</label>
-<input type="text" id="cambio" class="form-control" readonly value="0">
-</div>
-
+    <div class="col-md-4">
+        <label>Cambio</label>
+        <input type="text" id="cambio" class="form-control" readonly value="0">
+    </div>
 </div>
 
 <br>
-<div style="display: flex; gap: 10px;">
-    <button type="submit" class="btn btn-success mt-3">Registrar Venta</button>
-    <a href="{% url 'lista_ventas' %}" class="btn btn-secondary mt-3">Cancelar</a>
-</div>
+
+<button type="submit" class="btn btn-success">Registrar Venta</button>
+<a href="{% url 'lista_ventas' %}" class="btn btn-secondary">Cancelar</a>
+
 </form>
+
 <script>
+function formatoCOP(numero) {
+    return new Intl.NumberFormat('es-CO').format(numero);
+}
+
 function calcularTotal() {
     let total = 0;
 
-    document.querySelectorAll("tbody tr").forEach(row => {
+    document.querySelectorAll("#tabla-productos tr").forEach(row => {
         let precio = parseFloat(row.querySelector(".precio").dataset.precio);
         let cantidad = parseInt(row.querySelector(".cantidad").value) || 0;
 
         total += precio * cantidad;
     });
 
-    document.getElementById("total").value = total;
-
     let pago = parseFloat(document.getElementById("pago").value) || 0;
     let cambio = pago - total;
 
-    document.getElementById("cambio").value = cambio >= 0 ? cambio : 0;
+    document.getElementById("total").value = "$ " + formatoCOP(total);
+    document.getElementById("cambio").value = "$ " + (cambio >= 0 ? formatoCOP(cambio) : 0);
 }
 
 document.querySelectorAll(".cantidad").forEach(input => {
@@ -127,4 +102,5 @@ document.querySelectorAll(".cantidad").forEach(input => {
 
 document.getElementById("pago").addEventListener("input", calcularTotal);
 </script>
+
 {% endblock %}

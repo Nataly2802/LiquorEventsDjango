@@ -23,6 +23,8 @@ from reportlab.lib.styles import getSampleStyleSheet
 import os
 from django.conf import settings
 from django.core.paginator import Paginator
+from django.contrib.humanize.templatetags.humanize import intcomma
+from django.core.paginator import Paginator
 
 # Create your views here.
 def solo_empleados(view_func):
@@ -122,8 +124,10 @@ def crear_venta(request):
                 motivo=f"Venta #{venta.id}"
             )
 
-        messages.success(request, f"Venta registrada correctamente. Cambio: ${cambio}")
-
+            messages.success(
+                request,
+                f"Venta registrada correctamente. Cambio: ${intcomma(int(cambio)).replace(',', '.')}"
+            )
         return redirect("/venta/")
 
     return render(request, "inventario/venta.html", {
@@ -238,8 +242,8 @@ def ticket_pdf(request, venta_id):
         data.append([
             d.producto.nombre,
             d.cantidad,
-            f"${int(d.precio)}",
-            f"${int(d.subtotal)}"
+            f"${intcomma(int(d.precio)).replace(',', '.')}",
+            f"${intcomma(int(d.subtotal)).replace(',', '.')}"
         ])
 
     table = Table(data)
@@ -247,9 +251,7 @@ def ticket_pdf(request, venta_id):
     table.setStyle(TableStyle([
         ('BACKGROUND', (0,0), (-1,0), colors.black),
         ('TEXTCOLOR', (0,0), (-1,0), colors.white),
-
         ('GRID', (0,0), (-1,-1), 1, colors.grey),
-
         ('ALIGN', (1,1), (-1,-1), 'CENTER'),
         ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
     ]))
@@ -257,9 +259,9 @@ def ticket_pdf(request, venta_id):
     elements.append(table)
     elements.append(Spacer(1, 15))
 
-    elements.append(Paragraph(f"<b>Total:</b> ${int(venta.total)}", styles['Normal']))
-    elements.append(Paragraph(f"<b>Pago:</b> ${int(venta.pago)}", styles['Normal']))
-    elements.append(Paragraph(f"<b>Cambio:</b> ${int(venta.cambio)}", styles['Normal']))
+    elements.append(Paragraph(f"<b>Total:</b> ${intcomma(int(venta.total)).replace(',', '.')}", styles['Normal']))
+    elements.append(Paragraph(f"<b>Pago:</b> ${intcomma(int(venta.pago)).replace(',', '.')}", styles['Normal']))
+    elements.append(Paragraph(f"<b>Cambio:</b> ${intcomma(int(venta.cambio)).replace(',', '.')}", styles['Normal']))
 
     elements.append(Spacer(1, 10))
     elements.append(Paragraph("Gracias por su compra", styles['Italic']))
@@ -407,14 +409,6 @@ def exportar_excel(request):
 @solo_empleados
 def reporte_pdf(request):
 
-    from reportlab.lib.pagesizes import letter
-    from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Image, Paragraph, Spacer
-    from reportlab.lib import colors
-    from reportlab.lib.styles import getSampleStyleSheet
-    from django.http import HttpResponse
-    import os
-    from django.conf import settings
-
     ventas = Venta.objects.all().order_by('-fecha')
 
     fecha = request.GET.get('fecha')
@@ -473,7 +467,7 @@ def reporte_pdf(request):
                 venta.torneo.nombre if venta.torneo else "Normal",
                 d.producto.nombre,
                 d.cantidad,
-                f"${int(d.subtotal)}"
+                f"${intcomma(int(d.subtotal)).replace(',', '.')}"
             ])
 
             total_general += d.subtotal
@@ -483,24 +477,24 @@ def reporte_pdf(request):
     table.setStyle(TableStyle([
         ('BACKGROUND', (0,0), (-1,0), colors.grey),
         ('TEXTCOLOR', (0,0), (-1,0), colors.white),
-
         ('GRID', (0,0), (-1,-1), 1, colors.black),
-
         ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
         ('ALIGN', (4,1), (5,-1), 'CENTER'),
     ]))
 
     elements.append(table)
-
     elements.append(Spacer(1, 15))
 
-    elements.append(Paragraph(f"TOTAL GENERAL: ${int(total_general)}", styles['Heading2']))
+    elements.append(
+        Paragraph(
+            f"TOTAL GENERAL: ${intcomma(int(total_general)).replace(',', '.')}",
+            styles['Heading2']
+        )
+    )
 
     doc.build(elements)
 
     return response
-
-from django.core.paginator import Paginator
 
 @login_required
 def lista_productos(request):
