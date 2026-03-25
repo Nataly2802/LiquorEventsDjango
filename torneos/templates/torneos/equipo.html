@@ -1,0 +1,48 @@
+{% extends 'base/base.html' %}
+
+{% block contenido %}
+
+<h2>Inscripción en equipo - {{ torneo.nombre }}</h2>
+
+<form method="POST">
+    {% csrf_token %}
+
+    <div class="mb-3">
+        <label>Nombre del equipo</label>
+        <input type="text" name="nombre_equipo" class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+        <label>Número de personas</label>
+        <input type="number" id="num_personas" name="numero_personas" class="form-control" min="1" required>
+    </div>
+
+    <div id="integrantes"></div>
+
+    <button type="submit" class="btn btn-primary mt-3">
+        Inscribirse
+    </button>
+
+</form>
+
+<script>
+document.getElementById("num_personas").addEventListener("change", function() {
+    let contenedor = document.getElementById("integrantes");
+    contenedor.innerHTML = "";
+
+    let cantidad = this.value;
+
+    for (let i = 0; i < cantidad; i++) {
+        contenedor.innerHTML += `
+            <div class="border p-2 mt-2">
+                <h5>Integrante ${i + 1}</h5>
+
+                <input type="text" name="nombre_${i}" placeholder="Nombre" class="form-control mb-2" required>
+                <input type="text" name="celular_${i}" placeholder="Celular" class="form-control" required>
+            </div>
+        `;
+    }
+});
+</script>
+
+{% endblock %}

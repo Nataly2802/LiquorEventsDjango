@@ -28,7 +28,8 @@
             <div class="card-body">
                 <h5 class="card-title">{{ torneo.nombre }}</h5>
                 <p class="card-text">{{ torneo.descripcion }}</p>
-                
+                <p><strong>Valor inscripción:</strong> ${{ torneo.valor_inscripcion|floatformat:0 }}</p>
+                <p><strong>Premio:</strong> ${{ torneo.premio|floatformat:0 }}</p>
                 <p><strong>Fecha:</strong> {{ torneo.fecha }}</p>
                 <p><strong>Hora:</strong> {{ torneo.hora }}</p>
                 <p><strong>Cupos máximos:</strong> {{ torneo.cupo_maximo }}</p>
@@ -46,7 +47,7 @@
                     <p class="text-danger">Torneo lleno</p>
                 {% else %}
                     {% if request.user.is_authenticated %}
-                        <a href="{% url 'inscribirse' torneo.id %}" class="btn btn-primary btn-sm">
+                        <a href="{% url 'inscribirse' torneo.id %}" class="btn btn-primary btn-sm mt-2">
                             Inscribirse
                         </a>
                     {% else %}

@@ -4,10 +4,78 @@
 
 <h2 class="mb-4">Inscritos en {{ torneo.nombre }}</h2>
 
+<div class="alert alert-success">
+    Total recaudado: <strong>${{ total_recaudado|floatformat:0}}</strong>
+</div>
+
+<div class="alert alert-info">
+    Total inscritos: {{ total_personas }}
+</div>
+
 <ul class="list-group">
     {% for inscripcion in inscritos %}
-        <li class="list-group-item d-flex justify-content-between">
-            {{ inscripcion.participante.username }}
+        <li class="list-group-item">
+
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <strong>{{ inscripcion.participante.username }}</strong><br>
+
+                    {% if not inscripcion.pago %}
+                        <span class="badge bg-danger">No ha pagado</span><br>
+                    {% endif %}
+
+                    {% if inscripcion.numero_personas %}
+                        Personas: {{ inscripcion.numero_personas }}<br>
+                    {% endif %}
+
+                    {% if inscripcion.nombre_equipo %}
+                        Nombre: {{ inscripcion.nombre_equipo }}<br>
+                    {% endif %}
+                    
+                    {% if inscripcion.categoria %}
+                        Celular: {{ inscripcion.categoria }}
+                    {% endif %}
+                </div>
+
+                <div>
+                    {% if inscripcion.pago %}
+                        <a href="{% url 'cambiar_pago' inscripcion.id %}" class="btn btn-success btn-sm">
+                            Pagó
+                        </a>
+                    {% else %}
+                        <a href="{% url 'cambiar_pago' inscripcion.id %}" class="btn btn-warning btn-sm">
+                            Debe
+                        </a>
+                    {% endif %}
+
+                    <a href="{% url 'eliminar_participante' inscripcion.id %}" 
+                       class="btn btn-danger btn-sm"
+                       onclick="return confirm('¿Eliminar participante?')">
+                        Eliminar
+                    </a>
+
+                    {% if torneo.ganador %}
+                        {% if torneo.ganador == inscripcion %}
+                            <span class="badge bg-success">Ganador</span>
+                        {% endif %}
+                    {% else %}
+                        <a href="{% url 'seleccionar_ganador' torneo.id inscripcion.id %}" 
+                           class="btn btn-primary btn-sm">
+                            Elegir ganador
+                        </a>
+                    {% endif %}
+
+                </div>
+            </div>
+
+            {% if inscripcion.integrantes.all %}
+                <ul class="mt-2">
+                    {% for integrante in inscripcion.integrantes.all %}
+                        <li>{{ integrante.nombre }} - {{ integrante.celular }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
         </li>
     {% empty %}
         <li class="list-group-item">

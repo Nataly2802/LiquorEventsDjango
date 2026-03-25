@@ -8,8 +8,9 @@ class Torneo(models.Model):
     cupo_maximo = models.IntegerField()
     imagen = models.ImageField(upload_to='IMG/torneos/', null=True, blank=True)
     hora = models.TimeField(null=True, blank=True)
-    premio = models.CharField(max_length=200, null=True, blank=True)
-
+    premio = models.CharField(
+        max_length=100,
+    )
     tipo_juego = models.CharField(
         max_length=50,
         choices=[
@@ -22,14 +23,20 @@ class Torneo(models.Model):
         blank=True
     )
 
-    estado_reserva = models.CharField(
-        max_length=20,
-        choices=[('Abiertas', 'Abiertas'), ('Cerradas', 'Cerradas')],
-        default='Abiertas'
+    valor_inscripcion = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=0
     )
+    ganador = models.ForeignKey(
+        'Inscripcion',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='torneos_ganados'
+    )    
     def __str__(self):
         return self.nombre
-    
 class Inscripcion(models.Model):
     
     participante = models.ForeignKey(
@@ -45,7 +52,19 @@ class Inscripcion(models.Model):
     numero_personas = models.IntegerField(null=True, blank=True)
     categoria = models.CharField(max_length=50, null=True, blank=True)
     fecha_inscripcion = models.DateTimeField(auto_now_add=True)
+    pago = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.participante} - {self.torneo}"
-        
+
+class Integrante(models.Model):
+    inscripcion = models.ForeignKey(
+        Inscripcion,
+        on_delete=models.CASCADE,
+        related_name='integrantes'
+    )
+    nombre = models.CharField(max_length=100)
+    celular = models.CharField(max_length=20)
+
+    def __str__(self):
+        return self.nombre

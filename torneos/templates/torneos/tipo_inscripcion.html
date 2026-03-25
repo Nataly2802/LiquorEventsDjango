@@ -1,0 +1,15 @@
+{% extends 'base/base.html' %}
+
+{% block contenido %}
+
+<h2>¿Cómo deseas inscribirte en {{ torneo.nombre }}?</h2>
+
+<a href="?tipo=individual" class="btn btn-success">
+    Inscripción Individual
+</a>
+
+<a href="?tipo=equipo" class="btn btn-primary">
+    Inscripción en Equipo
+</a>
+
+{% endblock %}

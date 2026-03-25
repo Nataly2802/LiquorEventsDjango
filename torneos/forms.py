@@ -12,8 +12,8 @@ class TorneoForm(forms.ModelForm):
     'cupo_maximo',
     'premio',
     'tipo_juego',
-    'estado_reserva',
-    'imagen'
+    'valor_inscripcion',
+    'imagen',
 ]
         widgets = {
             'fecha': forms.DateInput(

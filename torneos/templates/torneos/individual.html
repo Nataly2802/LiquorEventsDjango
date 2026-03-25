@@ -1,0 +1,26 @@
+{% extends 'base/base.html' %}
+
+{% block contenido %}
+
+<h2>Inscripción Individual - {{ torneo.nombre }}</h2>
+
+<form method="POST">
+    {% csrf_token %}
+
+    <div class="mb-3">
+        <label>Nombre</label>
+        <input type="text" name="nombre" class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+        <label>Celular</label>
+        <input type="text" name="celular" class="form-control" required>
+    </div>
+
+    <button type="submit" class="btn btn-success">
+        Inscribirse
+    </button>
+
+</form>
+
+{% endblock %}

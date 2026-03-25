@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from .models import Torneo, Inscripcion
+from .models import Integrante, Torneo, Inscripcion
 from .forms import InscripcionForm, TorneoForm
 from django.contrib import messages
 from django.http import HttpResponseForbidden
@@ -30,15 +30,17 @@ def inscribirse(request, torneo_id):
 
     torneo = get_object_or_404(Torneo, id=torneo_id)
 
-    if torneo.estado_reserva == "Cerradas":
+    if hasattr(torneo, 'estado_reserva') and torneo.estado_reserva == "Cerradas":
         messages.error(request, "Las inscripciones están cerradas")
         return redirect('lista_torneos')
 
     total_inscritos = torneo.inscripcion_set.count()
 
     if total_inscritos >= torneo.cupo_maximo:
-        torneo.estado_reserva = "Cerradas"
-        torneo.save()
+        if hasattr(torneo, 'estado_reserva'):
+            torneo.estado_reserva = "Cerradas"
+            torneo.save()
+
         messages.error(request, "El torneo ya está lleno")
         return redirect('lista_torneos')
 
@@ -51,30 +53,62 @@ def inscribirse(request, torneo_id):
         messages.warning(request, "Ya estás inscrito en este torneo")
         return redirect('lista_torneos')
 
-    if request.method == "POST":
-        form = InscripcionForm(request.POST)
+    tipo = request.GET.get('tipo')
 
-        if form.is_valid():
-            inscripcion = form.save(commit=False)
-            inscripcion.participante = request.user
-            inscripcion.torneo = torneo
-            inscripcion.save()
+    if not tipo:
+        return render(request, "torneos/tipo_inscripcion.html", {
+            "torneo": torneo
+        })
 
-            total_inscritos = torneo.inscripcion_set.count()
-            if total_inscritos >= torneo.cupo_maximo:
-                torneo.estado_reserva = "Cerradas"
-                torneo.save()
+    if tipo == "individual":
+        if request.method == "POST":
+            nombre = request.POST.get("nombre")
+            celular = request.POST.get("celular")
+
+            Inscripcion.objects.create(
+                participante=request.user,
+                torneo=torneo,
+                nombre_equipo=nombre,
+                numero_personas=1,
+                categoria=celular
+            )
+
+            messages.success(request, "Inscripción individual exitosa")
+            return redirect('lista_torneos')
+
+        return render(request, "torneos/individual.html", {
+            "torneo": torneo
+        })
+
+    if tipo == "equipo":
+        if request.method == "POST":
+            nombre_equipo = request.POST.get("nombre_equipo")
+            numero_personas = int(request.POST.get("numero_personas", 0))
+
+            inscripcion = Inscripcion.objects.create(
+                participante=request.user,
+                torneo=torneo,
+                nombre_equipo=nombre_equipo,
+                numero_personas=numero_personas
+            )
+
+            for i in range(numero_personas):
+                nombre = request.POST.get(f"nombre_{i}")
+                celular = request.POST.get(f"celular_{i}")
+
+                if nombre and celular:
+                    Integrante.objects.create(
+                        inscripcion=inscripcion,
+                        nombre=nombre,
+                        celular=celular
+                    )
 
             messages.success(request, "Equipo inscrito correctamente")
             return redirect('lista_torneos')
-    else:
-        form = InscripcionForm()
 
-    return render(request, "torneos/inscribirse.html", {
-        "form": form,
-        "torneo": torneo
-    })
-
+        return render(request, "torneos/equipo.html", {
+            "torneo": torneo
+        })
 @login_required
 def mis_torneos(request):
 
@@ -111,11 +145,26 @@ def ver_inscritos(request, torneo_id):
 
     inscritos = torneo.inscripcion_set.all()
 
+    total_personas = 0
+    for ins in inscritos:
+        if ins.numero_personas:
+            total_personas += ins.numero_personas
+        else:
+            total_personas += 1
+
+    total_recaudado = 0
+    for ins in inscritos:
+        personas = ins.numero_personas if ins.numero_personas else 1
+
+        if bool(ins.pago):
+            total_recaudado += torneo.valor_inscripcion * personas
+    print(torneo.valor_inscripcion)
     return render(request, "torneos/inscritos.html", {
         "torneo": torneo,
-        "inscritos": inscritos
+        "inscritos": inscritos,
+        "total_recaudado": total_recaudado,
+        "total_personas": total_personas
     })
-    
 @login_required
 def cancelar_inscripcion(request, torneo_id):
 
@@ -172,4 +221,41 @@ def redireccion_login(request):
         return redirect('lista_torneos')
     return redirect('/dashboard')
 
+@login_required
+def cambiar_pago(request, inscripcion_id):
+    inscripcion = get_object_or_404(Inscripcion, id=inscripcion_id)
 
+    if request.user.rol == 'participante':
+        return HttpResponseForbidden("No tienes permiso")
+
+    inscripcion.pago = not inscripcion.pago
+    inscripcion.save()
+
+    return redirect('ver_inscritos', torneo_id=inscripcion.torneo.id)
+@login_required
+def eliminar_participante(request, inscripcion_id):
+    inscripcion = get_object_or_404(Inscripcion, id=inscripcion_id)
+
+    if request.user.rol == 'participante':
+        return HttpResponseForbidden("No tienes permiso")
+
+    torneo_id = inscripcion.torneo.id
+    inscripcion.delete()
+
+    messages.success(request, "Participante eliminado")
+    return redirect('ver_inscritos', torneo_id=torneo_id)
+@login_required
+def seleccionar_ganador(request, torneo_id, inscripcion_id):
+    torneo = get_object_or_404(Torneo, id=torneo_id)
+
+    if request.user.rol == 'participante':
+        return HttpResponseForbidden("No tienes permiso")
+
+    inscripcion = get_object_or_404(Inscripcion, id=inscripcion_id)
+
+    torneo.ganador = inscripcion
+    torneo.save()
+
+    messages.success(request, "Ganador registrado correctamente")
+
+    return redirect('ver_inscritos', torneo_id=torneo.id)
