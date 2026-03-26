@@ -1,25 +1,47 @@
 {% extends 'base/base.html' %}
 {% block contenido %}
-<h2>Registrar Compra</h2>
 
-<form method="post">
-    {% csrf_token %}
+<div class="container mt-5">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-dark text-white py-3">
+            <h4 class="mb-0"><i class="fas fa-cart-plus me-2"></i>Registrar Nueva Compra</h4>
+        </div>
+        <div class="card-body p-4">
+            <form method="post" class="row g-3 align-items-end">
+                {% csrf_token %}
 
-    <label>Producto:</label>
-    <select name="producto">
-        {% for p in productos %}
-            <option value="{{ p.id }}">{{ p.nombre }}</option>
-        {% endfor %}
-    </select>
+                <div class="col-md-4">
+                    <label class="form-label fw-bold">Producto</label>
+                    <select name="producto" class="form-select shadow-sm">
+                        {% for p in productos %}
+                            <option value="{{ p.id }}">{{ p.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
 
-    <label>Cantidad:</label>
-    <input type="number" name="cantidad" required>
+                <div class="col-md-2">
+                    <label class="form-label fw-bold">Cantidad</label>
+                    <input type="number" name="cantidad" class="form-control shadow-sm" placeholder="0" min="1" required>
+                </div>
 
-    <label>Proveedor:</label>
-    <input type="text" name="proveedor" required>
+                <div class="col-md-4">
+                    <label class="form-label fw-bold">Proveedor</label>
+                    <input type="text" name="proveedor" class="form-control shadow-sm" placeholder="Nombre del proveedor" required>
+                </div>
 
-    <button type="submit">Registrar</button>
-</form>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100 shadow-sm">
+                        <i class="fas fa-check-circle"></i> Registrar
+                    </button>
+                </div>
+            </form>
+        </div>
+        <div class="card-footer bg-light py-2">
+                            <a href="/compras/lista/" class="btn btn-outline-danger px-4 shadow-sm">
+                                <i class="fas fa-times"></i> Cancelar
+                            </a>
+        </div>
+    </div>
+</div>
 
-<a href="{% url 'lista_productos' %}">Volver</a>
 {% endblock %}

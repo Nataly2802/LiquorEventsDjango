@@ -1,44 +1,55 @@
 {% extends 'base/base.html' %}
-
 {% block contenido %}
 
-<h2>Inscripción en equipo - {{ torneo.nombre }}</h2>
+<div class="container mt-4">
+    <div class="card shadow-sm p-4">
+        <h2 class="mb-4">Inscripción en equipo - {{ torneo.nombre }}</h2>
 
-<form method="POST">
-    {% csrf_token %}
+        <form method="POST">
+            {% csrf_token %}
 
-    <div class="mb-3">
-        <label>Nombre del equipo</label>
-        <input type="text" name="nombre_equipo" class="form-control" required>
+            <div class="mb-3">
+                <label class="form-label fw-bold">Nombre del equipo</label>
+                <input type="text" name="nombre_equipo" class="form-control bg-light" placeholder="Nombre del equipo" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Número de personas</label>
+                <input type="number" id="num_personas" name="numero_personas" class="form-control" min="1" placeholder="Ej: 2" required>
+            </div>
+
+            <div id="integrantes"></div>
+
+            <button type="submit" class="btn btn-primary mt-4 px-4">
+                Inscribirse
+            </button>
+        </form>
     </div>
-
-    <div class="mb-3">
-        <label>Número de personas</label>
-        <input type="number" id="num_personas" name="numero_personas" class="form-control" min="1" required>
-    </div>
-
-    <div id="integrantes"></div>
-
-    <button type="submit" class="btn btn-primary mt-3">
-        Inscribirse
-    </button>
-
-</form>
+</div>
 
 <script>
-document.getElementById("num_personas").addEventListener("change", function() {
+document.getElementById("num_personas").addEventListener("input", function() {
     let contenedor = document.getElementById("integrantes");
     contenedor.innerHTML = "";
-
     let cantidad = this.value;
 
     for (let i = 0; i < cantidad; i++) {
         contenedor.innerHTML += `
-            <div class="border p-2 mt-2">
-                <h5>Integrante ${i + 1}</h5>
-
-                <input type="text" name="nombre_${i}" placeholder="Nombre" class="form-control mb-2" required>
-                <input type="text" name="celular_${i}" placeholder="Celular" class="form-control" required>
+            <div class="card mt-3 p-3 border-light shadow-sm">
+                <h5 class="text-primary">Integrante ${i + 1}</h5>
+                <div class="mb-2">
+                    <input type="text" name="nombre_${i}" placeholder="Nombre completo" class="form-control mb-2" required>
+                </div>
+                <div class="mb-2">
+                    <input type="text" 
+                           name="celular_${i}" 
+                           placeholder="Celular (10 dígitos)" 
+                           class="form-control" 
+                           maxlength="10"
+                           pattern="[0-9]{10}"
+                           oninput="this.value = this.value.replace(/[^0-9]/g, '');"
+                           required>
+                </div>
             </div>
         `;
     }
