@@ -36,6 +36,13 @@ border-radius:10px;
 {{ form.username }}
 </div>
 <small class="text-muted">Máx. 150 caracteres</small>
+{% if form.username.errors %}
+  <div class="alert alert-danger py-1 mt-1">
+    {% for error in form.username.errors %}
+      <small>{{ error }}</small>
+    {% endfor %}
+  </div>
+{% endif %}
 </div>
 
 <div class="mb-3">
@@ -44,6 +51,13 @@ border-radius:10px;
 <span class="input-group-text"></span>
 {{ form.email }}
 </div>
+{% if form.email.errors %}
+  <div class="alert alert-danger py-1 mt-1">
+    {% for error in form.email.errors %}
+      <small>{{ error }}</small>
+    {% endfor %}
+  </div>
+{% endif %}
 </div>
 
 <div class="mb-3">
@@ -52,7 +66,6 @@ border-radius:10px;
 <span class="input-group-text"></span>
 {{ form.password1 }}
 </div>
-
 <div class="form-text">
 <ul class="mb-0">
 <li>Debe tener al menos 8 caracteres</li>
@@ -60,6 +73,13 @@ border-radius:10px;
 <li>No puede ser solo números</li>
 </ul>
 </div>
+{% if form.password1.errors %}
+  <div class="alert alert-danger py-1 mt-1">
+    {% for error in form.password1.errors %}
+      <small>{{ error }}</small>
+    {% endfor %}
+  </div>
+{% endif %}
 </div>
 
 <div class="mb-3">
@@ -68,6 +88,13 @@ border-radius:10px;
 <span class="input-group-text"></span>
 {{ form.password2 }}
 </div>
+{% if form.password2.errors %}
+  <div class="alert alert-danger py-1 mt-1">
+    {% for error in form.password2.errors %}
+      <small>{{ error }}</small>
+    {% endfor %}
+  </div>
+{% endif %}
 </div>
 
 <div class="d-grid">

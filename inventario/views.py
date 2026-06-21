@@ -500,6 +500,7 @@ def reporte_pdf(request):
 def lista_productos(request):
 
     productos = Producto.objects.all()
+    categorias = Categoria.objects.all()
 
     buscar = request.GET.get('buscar')
     categoria = request.GET.get('categoria')
@@ -508,7 +509,7 @@ def lista_productos(request):
         productos = productos.filter(nombre__icontains=buscar)
 
     if categoria:
-        productos = productos.filter(categoria__icontains=categoria)
+        productos = productos.filter(categoria_id=categoria)
 
     paginator = Paginator(productos, 5)
     page = request.GET.get('page')
@@ -516,7 +517,8 @@ def lista_productos(request):
     productos = paginator.get_page(page)
 
     return render(request, 'inventario/productos.html', {
-        'productos': productos
+        'productos': productos,
+        'categorias': categorias
     })
 
 @login_required

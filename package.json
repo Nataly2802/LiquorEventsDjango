@@ -1,0 +1,25 @@
+{
+  "name": "liquorevents",
+  "version": "1.0.0",
+  "description": "Cypress",
+  "keywords": [
+    "Cypress",
+    "JavaScript"
+  ],
+  "homepage": "https://github.com/Nataly2802/LiquorEventsDjango#readme",
+  "bugs": {
+    "url": "https://github.com/Nataly2802/LiquorEventsDjango/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Nataly2802/LiquorEventsDjango.git"
+  },
+  "license": "ISC",
+  "author": "Kevin",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {}
+}
